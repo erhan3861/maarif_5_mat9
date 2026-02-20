@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yol Ayrımı - Karar Yapıları</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #9b59b6;
+            --dark-bg: #2d3436;
+            --accent: #8e44ad;
+            --text-light: #ecf0f1;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background-image: radial-gradient(circle at 50% 10%, #34495e 0%, #000 100%);
+            transition: background 1s;
+        }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            height: 50px;
+        }
+
+        .hud h1 {
+            font-family: 'Orbitron';
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .hud-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Orbitron';
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        .stage {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .path {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            margin-top: 30px;
+        }
+
+        .inv-icon {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .inv-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .signpost {
+            background: #d35400;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            border: 5px solid #e67e22;
+            max-width: 450px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn-dir {
+            font-size: 1.2rem;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Orbitron';
+            color: white;
+            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dynamic Styling Box */
+        .scenario-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            min-width: 300px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .inv-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .inv-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .signpost {
+            background: #d35400;
+            padding: 30px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            border: 5px solid #e67e22;
+            max-width: 500px;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Pole for signpost */
+        .signpost::after {
+            content: '';
+            position: absolute;
+            bottom: -500px;
+            left: 50%;
+            width: 20px;
+            height: 500px;
+            background: #7f8c8d;
+            margin-left: -10px;
+            z-index: -1;
+        }
+
+        .rule-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .keyword {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+
+        .btn-dir {
+            font-size: 1.5rem;
+            padding: 25px 45px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Orbitron';
+            color: white;
+            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-dir:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        .btn-left {
+            background: #e74c3c;
+        }
+
+        .btn-left:hover {
+            background: #c0392b;
+        }
+
+        .btn-right {
+            background: #2ecc71;
+        }
+
+        .btn-right:hover {
+            background: #27ae60;
+        }
+
+        /* Progress Dots */
+        .progress-dots {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .dot.active {
+            background: var(--primary);
+            transform: scale(1.3);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-box {
+            background: white;
+            color: #2c3e50;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hud">
+        <a href="index.html" class="hud-btn">❮ MENÜ</a>
+        <h1>YOL AYRIMI</h1>
+        <div style="display:flex; gap:10px;">
+            <button class="hud-btn" onclick="openModal('missionModal')">📜 GÖREV</button>
+            <button class="hud-btn btn-code" onclick="openModal('codeModal')">💻 KODLA</button>
+        </div>
+    </div>
+
+    <div class="stage">
+        <div class="progress-dots" id="dots"></div>
+
+        <div class="scenario-box" id="inventory-display">
+            <!-- Dynamic Content -->
+        </div>
+
+        <div class="signpost" id="signpost">
+            <h3 style="margin:0 0 15px 0; border-bottom:2px solid rgba(255,255,255,0.3); padding-bottom:10px;">TABELA
+                KURALI</h3>
+            <div class="rule-text" id="rule-display">
+                <!-- Dynamic Rule -->
+            </div>
+        </div>
+
+        <div class="path">
+            <button class="btn-dir btn-left" onclick="choose('SOL')">⬅️ SOL</button>
+            <button class="btn-dir btn-right" onclick="choose('SAĞ')">SAĞ ➡️</button>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="missionModal">
+        <div class="modal-box">
+            <span class="close-btn" onclick="closeModal('missionModal')">&times;</span>
+            <h2>GÖREV TALİMATI</h2>
+            <p>Karşına çıkan engelleri aşmak için <b>Şart Bloklarını</b> (If/Else) kullan.</p>
+            <p>Envanterindeki eşyalara ve tabeladaki kurala bakarak doğru yolu seç.</p>
+        </div>
+    </div>
+
+    <div class="modal" id="codeModal">
+        <div class="modal-box">
+            <span class="close-btn" onclick="closeModal('codeModal')">&times;</span>
+            <h2>KOD LABORATUVARI</h2>
+            <p>Bilgisayarlar karar vermek için <b>Karşılaştırma Operatörlerini</b> kullanır.</p>
+            <div
+                style="background:#2d3436; color:#fff; padding:15px; text-align:left; border-radius:5px; font-family:monospace; margin-top:20px;">
+                <span style="color:#e67e22">if</span> (can < 50) {<br>
+                    &nbsp;&nbsp;iksirİç(); <span style="color:#7f8c8d">// Doğru (True)</span><br>
+                    } <span style="color:#e67e22">else</span> {<br>
+                    &nbsp;&nbsp;savas(); <span style="color:#7f8c8d">// Yanlış (False)</span><br>
+                    }
+            </div>
+            <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
+                style="display:inline-block; margin-top:20px;">EDİTÖRÜ AÇ</a>
+        </div>
+    </div>
+
+    <div class="modal" id="resultModal">
+        <div class="modal-box">
+            <div id="res-icon" style="font-size:4rem; margin-bottom:10px;"></div>
+            <h2 id="res-title"></h2>
+            <p id="res-desc" style="font-size:1.1rem; color:#555;"></p>
+            <button class="hud-btn" id="res-btn" style="display:inline-block; background:#2980b9;">DEVAM ET</button>
+        </div>
+    </div>
+
+    <script>
+        const scenarios = [
+            {
+                invIcon: "💎",
+                invText: "45 Elmas",
+                bg: "#2c3e50", // Dark Blue
+                signColor: "#d35400", // Orange
+                rule: "EĞER <span class='keyword'>(Elmas > 50)</span> İSE <br>SAĞDAN GİT <br>DEĞİLSE (ELSE) <br>SOLDAN GİT",
+                condition: (val) => val > 50,
+                val: 45,
+                correct: 'SOL',
+                wrongMsg: "Elmas sayın 50'den büyük değil (45 < 50)."
+            },
+            {
+                invIcon: "🍎",
+                invText: "Enerji: %80",
+                bg: "#27ae60", // Greenish
+                signColor: "#c0392b", // Red
+                rule: "EĞER <span class='keyword'>(Enerji < %30)</span> İSE <br>SOLA (Dinlen) <br>DEĞİLSE <br>SAĞA (Koş)",
+                condition: (val) => val < 30,
+                val: 80,
+                correct: 'SAĞ',
+                wrongMsg: "Enerjin %30'dan küçük değil (%80). O yüzden koşmalısın!"
+            },
+            {
+                invIcon: "🔑",
+                invText: "Altın Anahtar",
+                bg: "#8e44ad", // Purple
+                signColor: "#f39c12", // Yellow
+                rule: "EĞER <span class='keyword'>(Anahtar == 'Altın')</span> İSE <br>SAĞDAN GİT (Hazine) <br>DEĞİLSE <br>SOLDAN GİT (Zindan)",
+                condition: (val) => val === 'Altın',
+                val: 'Altın',
+                correct: 'SAĞ',
+                wrongMsg: "Altın anahtarın var, hazineye gitmeliydin!"
+            },
+            {
+                invIcon: "🌧️",
+                invText: "Hava Durumu: Yağmurlu",
+                bg: "#34495e", // Dark Grey
+                signColor: "#2980b9", // Blue
+                rule: "EĞER <span class='keyword'>(Hava != 'Güneşli')</span> İSE <br>SOLA (Şemsiye Al) <br>DEĞİLSE <br>SAĞA (Gözlük Tak)",
+                condition: (val) => val !== 'Güneşli',
+                val: 'Yağmurlu',
+                correct: 'SOL',
+                wrongMsg: "Hava güneşli olmadığı için şemsiyeni almalıydın."
+            },
+            // New Scenarios
+            {
+                invIcon: "🚗",
+                invText: "Hız: 80 km/s",
+                bg: "#c0392b", // Red
+                signColor: "#ecf0f1", // White
+                rule: "EĞER <span class='keyword'>(Hız > 50)</span> İSE <br>SAĞA (Yavaşla) <br>DEĞİLSE <br>SOLA (Devam Et)",
+                condition: (val) => val > 50,
+                val: 80,
+                correct: 'SAĞ',
+                wrongMsg: "Hızın 80, yani 50'den büyük. Yavaşlaman (Sağ) gerekirdi."
+            },
+            {
+                invIcon: "🔋",
+                invText: "Pil: %15",
+                bg: "#f39c12", // Orange
+                signColor: "#2c3e50", // Dark
+                rule: "EĞER <span class='keyword'>(Pil <= %20)</span> İSE <br>SOLA (Şarj Et) <br>DEĞİLSE <br>SAĞA (Kullan)",
+                condition: (val) => val <= 20,
+                val: 15,
+                correct: 'SOL',
+                wrongMsg: "Pilin %20'den az (%15). Şarj etmen gerekirdi."
+            }
+        ];
+
+        let currentIdx = 0;
+
+        function initGame() {
+            // Render Dots
+            const dotCont = document.getElementById('dots');
+            dotCont.innerHTML = "";
+            for (let i = 0; i < scenarios.length; i++) {
+                let dot = document.createElement('div');
+                dot.className = 'dot' + (i === 0 ? ' active' : '');
+                dot.id = 'dot-' + i;
+                dotCont.appendChild(dot);
+            }
+            loadScenario();
+        }
+
+        function loadScenario() {
+            if (currentIdx >= scenarios.length) {
+                // Finish
+                showResult(true, "BİTTİ", "Tüm kararları doğru verdin!", true);
+                return;
+            }
+
+            const s = scenarios[currentIdx];
+
+            // Apply Styles
+            document.body.style.backgroundImage = `radial-gradient(circle at 50% 10%, ${s.bg} 0%, #000 100%)`;
+            document.getElementById('signpost').style.backgroundColor = s.signColor;
+            document.getElementById('signpost').style.borderColor = adjustColor(s.signColor, -20);
+
+            // Set Text
+            const inv = document.getElementById('inventory-display');
+            inv.style.color = s.keywordColor || '#fff';
+            inv.innerHTML = `<span class="inv-icon">${s.invIcon}</span><div class="inv-text">${s.invText}</div>`;
+
+            document.getElementById('rule-display').innerHTML = s.rule;
+
+            // Dot Update
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === currentIdx);
+            });
+        }
+
+        function choose(choice) {
+            const s = scenarios[currentIdx];
+            if (choice === s.correct) {
+                showResult(true, "DOĞRU KARAR! ✅", "Mantık doğru kuruldu.");
+            } else {
+                showResult(false, "YANLIŞ YOL! ⛔", s.wrongMsg);
+            }
+        }
+
+        function showResult(success, title, desc, isFinal = false) {
+            const mBox = document.querySelector('#resultModal .modal-box');
+            mBox.style.borderTop = success ? "5px solid #2ecc71" : "5px solid #e74c3c";
+
+            document.getElementById('res-icon').innerText = success ? "🎉" : "🤔";
+            document.getElementById('res-title').innerText = title;
+            document.getElementById('res-title').style.color = success ? "#2ecc71" : "#e74c3c";
+            document.getElementById('res-desc').innerText = desc;
+
+            const btn = document.getElementById('res-btn');
+
+            if (isFinal) {
+                btn.innerText = "ANA MENÜYE DÖN";
+                btn.onclick = () => location.href = 'index.html';
+                btn.style.background = "#2ecc71";
+            } else if (success) {
+                btn.innerText = "SONRAKİ SEVİYE";
+                btn.onclick = () => {
+                    closeModal('resultModal');
+                    currentIdx++;
+                    loadScenario();
+                };
+                btn.style.background = "#3498db";
+            } else {
+                btn.innerText = "TEKRAR DENE";
+                btn.onclick = () => closeModal('resultModal');
+                btn.style.background = "#e74c3c";
+            }
+
+            openModal('resultModal');
+        }
+
+        function adjustColor(color, amount) {
+            return color; // Simplification, ideally hex darken algo
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        window.onload = initGame;
+    </script>
+</body>
+
+</html>

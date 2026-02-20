@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Köprü İnşası - Noktadan Doğru Parçasına</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2d3;
+            --dark-bg: #10142b;
+            --accent: #ff9f43;
+            --text-light: #c8d6e5;
+            --canvas-bg: #1e2749;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--dark-bg); color: var(--text-light);
+            height: 100vh; max-height: 615px; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        /* HUD */
+        .hud {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 5px 20px; background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(0, 210, 211, 0.2); height: 45px; flex-shrink: 0;
+        }
+        .hud h1 { font-family: 'Orbitron'; margin: 0; color: var(--primary); font-size: 1.1rem; }
+        .hud-btn {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white; padding: 4px 12px; border-radius: 20px;
+            cursor: pointer; transition: 0.2s; font-family: 'Orbitron';
+            text-decoration: none; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
+        }
+        .hud-btn:hover { background: var(--primary); color: var(--dark-bg); border-color: var(--primary); }
+        .btn-code { border-color: var(--accent); color: var(--accent); }
+        .btn-code:hover { background: var(--accent); color: #10142b; border-color: var(--accent); }
+
+        /* Oyun Alanı */
+        .stage {
+            flex-grow: 1; display: flex; flex-direction: column;
+            align-items: center; padding: 10px; position: relative;
+        }
+
+        .info-panel {
+            background: rgba(255, 159, 67, 0.1); border: 1px solid var(--accent);
+            padding: 10px 15px; border-radius: 8px; color: var(--accent);
+            font-weight: 600; font-size: 0.9rem; margin-bottom: 10px;
+            width: 90%; max-width: 600px; text-align: center;
+        }
+
+        /* Etkileşimli Tuval */
+        .canvas-container {
+            width: 90%; max-width: 600px; height: 280px;
+            background-color: var(--canvas-bg);
+            background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border: 2px solid #34495e; border-radius: 12px;
+            position: relative; cursor: crosshair;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+        canvas { width: 100%; height: 100%; border-radius: 10px; }
+
+        /* Kontrol Paneli */
+        .control-panel {
+            width: 90%; max-width: 600px; margin-top: 15px;
+            background: rgba(255, 255, 255, 0.05); padding: 15px;
+            border-radius: 12px; display: flex; flex-direction: column; gap: 10px;
+            box-sizing: border-box;
+        }
+
+        .action-row { display: flex; justify-content: space-between; align-items: center; }
+        
+        .tool-btn {
+            background: #2c3e50; border: none; color: white;
+            padding: 8px 15px; border-radius: 8px; font-family: 'Orbitron';
+            font-size: 0.85rem; cursor: not-allowed; opacity: 0.5; transition: 0.3s;
+        }
+        .tool-btn.active {
+            background: var(--primary); color: var(--dark-bg);
+            cursor: pointer; opacity: 1; box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Slider */
+        .slider-container { display: none; flex-direction: column; gap: 5px; width: 100%; }
+        .slider-container label { font-size: 0.8rem; color: #bdc3c7; font-weight: bold; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 20px; width: 20px;
+            border-radius: 50%; background: var(--accent); cursor: pointer;
+            margin-top: -8px; box-shadow: 0 0 10px var(--accent);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #34495e; border-radius: 2px;
+        }
+
+        /* Modallar */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); display: none; justify-content: center;
+            align-items: center; z-index: 100; backdrop-filter: blur(3px);
+        }
+        .modal-box {
+            background: var(--dark-bg); border: 1px solid var(--primary);
+            color: var(--text-light); padding: 20px; border-radius: 15px;
+            max-width: 450px; width: 85%; text-align: center; position: relative;
+        }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #8395a7; }
+        .res-btn {
+            margin-top: 15px; background: var(--primary); border: none; padding: 8px 30px;
+            color: var(--dark-bg); font-family: 'Orbitron'; font-size: 0.9rem; border-radius: 20px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hud">
+        <a href="index.html" class="hud-btn">❮ MENÜ</a>
+        <h1>DOĞRU PARÇASI LABORATUVARI</h1>
+        <div style="display:flex; gap:8px;">
+            <button class="hud-btn" onclick="openModal('missionModal')">📜 GÖREV</button>
+            <button class="hud-btn btn-code" onclick="openModal('codeModal')">💻 KODLA</button>
+        </div>
+    </div>
+
+    <div class="stage">
+        <div class="info-panel" id="instruction">
+            🤖 Uzay haritasında (ızgarada) başlangıç için bir <b>A Noktası</b> işaretle.
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div class="control-panel">
+            <div class="action-row">
+                <div style="font-size:0.85rem; color:#8395a7;">Durum: <span id="status-text" style="color:#fff; font-weight:bold;">Noktalar Bekleniyor</span></div>
+                <button class="tool-btn" id="rulerBtn" onclick="activateRuler()">📐 ÇİZGEÇ KULLAN</button>
+            </div>
+            
+            <div class="slider-container" id="densityControl">
+                <label>Lazer Yoğunluğu (Araya Noktalar Ekle)</label>
+                <input type="range" id="densitySlider" min="0" max="100" value="0" oninput="drawCanvas()">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="missionModal">
+        <div class="modal-box">
+            <span class="close-btn" onclick="closeModal('missionModal')">&times;</span>
+            <h2 style="color:var(--primary); margin-top:0;">GÖREV TALİMATI</h2>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:left; margin-bottom:15px; border-left:4px solid var(--primary);">
+                <h3 style="color:var(--primary); font-size:0.95rem; margin:0 0 5px 0;">Öğrenme Çıktısı (MAT.5.3.1)</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>Kazanım:</b> Temel geometrik çizimler için matematiksel araç ve teknolojiden yararlanabilme.</p>
+            </div>
+
+            <div style="background:rgba(255,159,67,0.1); padding:15px; border-radius:10px; text-align:left; border-left:4px solid var(--accent);">
+                <h3 style="color:var(--accent); font-size:0.95rem; margin:0 0 5px 0;">Bu Alıştırmanın Sana Faydası</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;">"Doğru parçası"nın sadece basit bir çizgi olmadığını; iki nokta arasına aynı hizada dizilmiş <b>sayısız noktanın birleşimi</b> olduğunu kendi ellerinle inşa ederek kavrarsın. Çizgeç (ölçüsüz cetvel) kullanım mantığını dijital ortamda keşfedersin.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="codeModal">
+        <div class="modal-box">
+            <span class="close-btn" onclick="closeModal('codeModal')">&times;</span>
+            <h2 style="color:var(--accent); margin-top:0;">KOD LABORATUVARI</h2>
+            <p style="font-size:0.85rem;">Editörde kendi doğru parçanı kodlamak ister misin? "Kodu Kopyala" butonuna bas ve kod editörüne yapıştırarak denemeler yap!</p>
+            
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()" style="padding:10px 15px; font-size:0.8rem; font-weight:bold;">📄 KODU KOPYALA</button>
+                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code" style="padding:10px 15px; font-size:0.8rem; background:var(--accent); color:#10142b; font-weight:bold;">💻 EDİTÖRDE DENE</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="resultModal">
+        <div class="modal-box">
+            <div style="font-size:3rem; margin-bottom:5px;">🌌</div>
+            <h2 style="color:var(--primary);">SİSTEM TAMAMLANDI!</h2>
+            <p style="font-size:0.9rem;">Tebrikler! Yan yana dizilmiş sonsuz noktanın birleşerek bir <b>Doğru Parçası</b> oluşturduğunu uygulamalı olarak keşfettin.</p>
+            <button class="res-btn" onclick="location.href='index.html'">MENÜYE DÖN</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const instText = document.getElementById('instruction');
+        const statusText = document.getElementById('status-text');
+        const rulerBtn = document.getElementById('rulerBtn');
+        const densityControl = document.getElementById('densityControl');
+        const slider = document.getElementById('densitySlider');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawCanvas();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        let state = 0; 
+        let ptA = null;
+        let ptB = null;
+        let rulerActive = false;
+        let isSuccessShown = false;
+
+        canvas.addEventListener('mousedown', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (state === 0) {
+                ptA = {x, y};
+                state = 1;
+                instText.innerHTML = "🤖 A Noktası kaydedildi. Şimdi bitiş için <b>B Noktasını</b> işaretle.";
+                drawCanvas();
+            } 
+            else if (state === 1) {
+                const dist = Math.hypot(x - ptA.x, y - ptA.y);
+                if(dist < 50) {
+                    instText.innerHTML = "⚠️ Kraterler çok yakın! B noktasını biraz daha uzağa seç.";
+                    return;
+                }
+                ptB = {x, y};
+                state = 2;
+                instText.innerHTML = "🤖 İki nokta da hazır! Aşağıdan <b>ÇİZGEÇ KULLAN</b> butonuna tıkla.";
+                statusText.innerText = "Hizalama Bekleniyor";
+                rulerBtn.classList.add('active');
+                drawCanvas();
+            }
+        });
+
+        function activateRuler() {
+            if (state === 2) {
+                rulerActive = true;
+                state = 3;
+                rulerBtn.style.display = 'none';
+                densityControl.style.display = 'flex';
+                statusText.innerText = "Lazer Bağlantısı";
+                instText.innerHTML = "🤖 Çizgeç yerleşti! Şimdi <b>Lazer Yoğunluğu</b> kaydırıcısını (slider) yavaşça sağa çek.";
+                drawCanvas();
+            }
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (rulerActive && ptA && ptB) {
+                ctx.save();
+                const angle = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+                const dist = Math.hypot(ptB.x - ptA.x, ptB.y - ptA.y);
+                
+                ctx.translate(ptA.x, ptA.y);
+                ctx.rotate(angle);
+                
+                ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.rect(0, 10, dist, 40);
+                ctx.fill();
+                ctx.stroke();
+                
+                for(let i=10; i<dist; i+=20) {
+                    ctx.beginPath(); ctx.moveTo(i, 10); ctx.lineTo(i, 20); ctx.stroke();
+                }
+                ctx.restore();
+            }
+
+            if (state === 3) {
+                const density = parseInt(slider.value); 
+                
+                if(density > 0) {
+                    const dist = Math.hypot(ptB.x - ptA.x, ptB.y - ptA.y);
+                    const numDots = Math.floor((density / 100) * (dist / 2)); 
+                    
+                    ctx.fillStyle = "var(--primary)";
+                    for (let i = 1; i < numDots; i++) {
+                        const t = i / numDots;
+                        const nx = ptA.x + (ptB.x - ptA.x) * t;
+                        const ny = ptA.y + (ptB.y - ptA.y) * t;
+                        
+                        ctx.beginPath();
+                        ctx.arc(nx, ny, Math.max(1, 4 - (density/30)), 0, Math.PI * 2); 
+                        ctx.fill();
+                    }
+                }
+
+                if (density === 100 && !isSuccessShown) {
+                    isSuccessShown = true;
+                    ctx.beginPath();
+                    ctx.moveTo(ptA.x, ptA.y);
+                    ctx.lineTo(ptB.x, ptB.y);
+                    ctx.strokeStyle = "var(--primary)";
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                    
+                    setTimeout(() => openModal('resultModal'), 800);
+                }
+            }
+
+            if (ptA) drawPoint(ptA.x, ptA.y, "A", "#ff9f43");
+            if (ptB) drawPoint(ptB.x, ptB.y, "B", "#00d2d3");
+        }
+
+        function drawPoint(x, y, label, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = color;
+            
+            ctx.font = "bold 14px Orbitron";
+            ctx.fillStyle = "#fff";
+            ctx.shadowBlur = 0;
+            ctx.fillText(label, x - 5, y - 12);
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // Öğrenci Kod Kopyalama Sistemi - GİZLENMİŞ KAPATMA ETİKETİ İLE
+        function copyStudentCode() {
+            const studentCode = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Benim Doğru Parçası Projem</title>
+    <style>
+        /* İPUCU 1: Sayfanın arka plan rengini buradan değiştirebilirsin. 
+           "#10142b" yazan yeri "black", "darkblue" veya "purple" yapmayı dene! 
+        */
+        body {
+            background-color: #10142b;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        /* İPUCU 2: Çizim alanının (tuvalin) rengini ve kenarlıklarını buradan ayarlayabilirsin.
+           "border" kısmındaki rengi değiştirirsen çerçevenin rengi değişir.
+        */
+        #gameCanvas {
+            background-color: #1e2749;
+            border: 3px solid #00d2d3;
+            border-radius: 10px;
+            cursor: crosshair;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #00d2d3;
+            color: #10142b;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; 
+        }
+
+        #sliderGrup {
+            display: none; 
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kendi Doğru Parçamı Çiziyorum</h1>
+    
+    <h3 id="mesaj">Önce uzayda bir 'A Noktası' işaretlemek için kutuya tıkla!</h3>
+
+    <canvas id="gameCanvas" width="600" height="300"></canvas>
+
+    <button id="cetvelBtn" onclick="cetveliAl()">📏 ÇİZGEÇ (CETVEL) KULLAN</button>
+
+    <div id="sliderGrup">
+        <p>Noktaları Sıklaştır (Lazer Yoğunluğu)</p>
+        <input type="range" id="yogunluk" min="0" max="100" value="0" oninput="cizimiGuncelle()" style="width: 300px;">
+    </div>
+
+    <script>
+        const tuval = document.getElementById("gameCanvas");
+        const cizimAraci = tuval.getContext("2d");
+        const mesajKutusu = document.getElementById("mesaj");
+        const cetvelButonu = document.getElementById("cetvelBtn");
+        const sliderGrup = document.getElementById("sliderGrup");
+        const slider = document.getElementById("yogunluk");
+
+        let asama = 0; 
+        let noktaA = null;
+        let noktaB = null;
+        let cetvelAktif = false;
+
+        tuval.addEventListener("mousedown", function(olay) {
+            const x = olay.offsetX;
+            const y = olay.offsetY;
+
+            if (asama === 0) {
+                noktaA = { x: x, y: y }; 
+                asama = 1;
+                mesajKutusu.innerHTML = "Harika! Şimdi bitiş için 'B Noktası' işaretle.";
+                cizimiGuncelle();
+            } 
+            else if (asama === 1) {
+                noktaB = { x: x, y: y }; 
+                asama = 2;
+                mesajKutusu.innerHTML = "İki nokta da hazır! Çizgeç (Cetvel) butonuna tıkla.";
+                cetvelButonu.style.display = "block"; 
+                cizimiGuncelle();
+            }
+        });
+
+        function cetveliAl() {
+            cetvelAktif = true;
+            asama = 3;
+            cetvelButonu.style.display = "none"; 
+            sliderGrup.style.display = "block"; 
+            mesajKutusu.innerHTML = "Çizgeç yerleşti! Noktaları birleştirmek için aşağıdaki çubuğu sağa kaydır.";
+            cizimiGuncelle();
+        }
+
+        function cizimiGuncelle() {
+            cizimAraci.clearRect(0, 0, tuval.width, tuval.height);
+
+            if (cetvelAktif) {
+                cizimAraci.strokeStyle = "rgba(255, 255, 255, 0.2)"; 
+                cizimAraci.lineWidth = 20; 
+                cizimAraci.beginPath();
+                cizimAraci.moveTo(noktaA.x, noktaA.y);
+                cizimAraci.lineTo(noktaB.x, noktaB.y);
+                cizimAraci.stroke();
+            }
+
+            if (asama === 3) {
+                let deger = parseInt(slider.value); 
+                
+                if (deger > 0) {
+                    let aradakiNoktaSayisi = deger; 
+                    
+                    // İPUCU 5: Çizilecek ara noktaların rengini buradan değiştirebilirsin!
+                    cizimAraci.fillStyle = "#00d2d3"; 
+                    
+                    for (let i = 1; i <= aradakiNoktaSayisi; i++) {
+                        let oran = i / aradakiNoktaSayisi;
+                        let yeniX = noktaA.x + (noktaB.x - noktaA.x) * oran;
+                        let yeniY = noktaA.y + (noktaB.y - noktaA.y) * oran;
+                        
+                        cizimAraci.beginPath();
+                        // İPUCU 6: Aşağıdaki "3" sayısı ara noktaların büyüklüğüdür.
+                        cizimAraci.arc(yeniX, yeniY, 3, 0, Math.PI * 2);
+                        cizimAraci.fill();
+                    }
+                }
+
+                if (deger === 100) {
+                    mesajKutusu.innerHTML = "Tebrikler! Yan yana gelen noktalar bir DOĞRU PARÇASI oluşturdu!";
+                }
+            }
+
+            if (noktaA !== null) { noktayiCiz(noktaA.x, noktaA.y, "A", "#ff9f43"); }
+            if (noktaB !== null) { noktayiCiz(noktaB.x, noktaB.y, "B", "#00d2d3"); }
+        }
+
+        function noktayiCiz(x, y, harf, renk) {
+            cizimAraci.beginPath();
+            cizimAraci.arc(x, y, 6, 0, Math.PI * 2);
+            cizimAraci.fillStyle = renk;
+            cizimAraci.fill();
+            cizimAraci.fillStyle = "white";
+            cizimAraci.font = "16px Arial";
+            cizimAraci.fillText(harf, x - 5, y - 10);
+        }
+    ${'</script>'}
+</body>
+</html>`;
+
+            navigator.clipboard.writeText(studentCode).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = "✓ KOPYALANDI";
+                btn.style.background = "#2ecc71";
+                btn.style.borderColor = "#2ecc71";
+                btn.style.color = "#10142b";
+                
+                setTimeout(() => {
+                    btn.innerHTML = "📄 KODU KOPYALA";
+                    btn.style.background = "transparent";
+                    btn.style.borderColor = "var(--accent)";
+                    btn.style.color = "var(--accent)";
+                }, 2000);
+            }).catch(err => {
+                console.error('Kopyalama başarısız: ', err);
+                alert("Kopyalama başarısız oldu. Lütfen tekrar deneyin.");
+            });
+        }
+
+        resizeCanvas();
+    </script>
+</body>
+</html>

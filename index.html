@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Macerası - Geometri Gezegeni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2d3;
+            --dark-bg: #10142b;
+            --accent: #ff9f43;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-light: #c8d6e5;
+        }
+
+        /* 615px Yükseklik Sınırı ve Scroll İptali */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 210, 211, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 85% 30%, rgba(255, 159, 67, 0.1) 0%, transparent 30%);
+            color: var(--text-light);
+            height: 100vh;
+            max-height: 615px; /* Sınırlandırılmış Yükseklik */
+            overflow: hidden; /* Scroll tamamen kapalı */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Dikeyde merkeze al */
+        }
+
+        /* Arka Plan Uzay Animasyonu */
+        .star {
+            position: fixed;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(0, 210, 211, 0.4);
+            font-size: 1.6rem; /* Küçültüldü */
+        }
+
+        .sub-title {
+            color: var(--accent);
+            margin-top: 5px;
+            font-size: 0.9rem; /* Küçültüldü */
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Kompakt Grid Sistemi */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px; /* Boşluklar azaltıldı */
+            width: 95%;
+            max-width: 900px; /* Genişlik optimize edildi */
+            z-index: 10;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px; /* İç boşluk azaltıldı */
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 125px; /* Kart yüksekliği sabitlendi ve küçültüldü */
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary);
+            background: rgba(0, 210, 211, 0.1);
+        }
+
+        .game-icon {
+            font-size: 2rem; /* Emojiler küçültüldü */
+            margin-bottom: 5px;
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.1);
+        }
+
+        .game-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem; /* Başlık küçültüldü */
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .game-desc {
+            font-size: 0.75rem; /* Açıklama fontu çok küçültüldü */
+            color: #8395a7;
+            line-height: 1.2;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* Maksimum 2 satır */
+            -webkit-box-orient: vertical;
+        }
+
+        .play-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 4px 15px;
+            border-radius: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 8px;
+            transition: 0.3s;
+        }
+
+        .game-card:hover .play-btn {
+            background: var(--primary);
+            color: var(--dark-bg);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="stars"></div>
+
+    <header>
+        <h1>ROBOT MACERASI</h1>
+        <div class="sub-title">3. TEMA: GEOMETRİK ŞEKİLLERİ KEŞFET (MAT.5.3.1)</div>
+    </header>
+
+    <div class="games-grid">
+        <div class="game-card" onclick="location.href='oyun1.html'">
+            <div class="game-icon">🌉</div>
+            <div>
+                <div class="game-title">ÇİZGEÇ</div>
+                <div class="game-desc">Nokta ve Doğru Parçası Oluşturma</div>
+            </div>
+            <button class="play-btn">BAŞLAT</button>
+        </div>
+
+        <div class="game-card" onclick="location.href='oyun2.html'">
+            <div class="game-icon">☄️</div>
+            <div>
+                <div class="game-title">LAZER SAVUNMASI</div>
+                <div class="game-desc">Işın ve Doğru Kavramları</div>
+            </div>
+            <button class="play-btn">BAŞLAT</button>
+        </div>
+
+        <div class="game-card" onclick="location.href='oyun3.html'">
+            <div class="game-icon">🛰️</div>
+            <div>
+                <div class="game-title">GÜNEŞ PANELİ</div>
+                <div class="game-desc">Işınların Dönme Miktarı (Açı)</div>
+            </div>
+            <button class="play-btn">BAŞLAT</button>
+        </div>
+
+        <div class="game-card" onclick="location.href='oyun4.html'">
+            <div class="game-icon">📡</div>
+            <div>
+                <div class="game-title">RADAR AYARI</div>
+                <div class="game-desc">Çember, Çap ve Yarıçap Hesaplama</div>
+            </div>
+            <button class="play-btn">BAŞLAT</button>
+        </div>
+
+        <div class="game-card" onclick="location.href='oyun5.html'">
+            <div class="game-icon">📐</div>
+            <div>
+                <div class="game-title">GÜVENLİ ROTA</div>
+                <div class="game-desc">Gönye ile Dikme ve En Kısa Mesafe</div>
+            </div>
+            <button class="play-btn">BAŞLAT</button>
+        </div>
+
+        <div class="game-card" onclick="location.href='oyun6.html'">
+            <div class="game-icon">⚙️</div>
+            <div>
+                <div class="game-title">BARET TASARIMI</div>
+                <div class="game-desc">Geometrik Şekillerle Estetik Çizim</div>
+            </div>
+            <button class="play-btn">BAŞLAT</button>
+        </div>
+    </div>
+
+    <script>
+        // Basit Yıldız Animasyonu (Uzay Teması İçin)
+        const container = document.getElementById('stars');
+        for (let i = 0; i < 30; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+            star.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(star);
+        }
+    </script>
+</body>
+</html>
