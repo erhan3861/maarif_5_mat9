@@ -1,305 +1,335 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Şekil Ruhları - Akış Şeması</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap"
-        rel="stylesheet">
+    <title>Lazer Savunması - Işın ve Doğru</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #3498db;
-            --dark-bg: #1e272e;
-            --accent: #9b59b6;
-            --text-light: #ecf0f1;
+            --primary: #9b59b6;
+            --dark-bg: #10142b;
+            --accent: #f1c40f;
+            --text-light: #c8d6e5;
+            --canvas-bg: #1e1135;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: 'Fredoka', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background-image: radial-gradient(circle at 80% 20%, #2c3e50 0%, #1a1a1a 100%);
+            background-color: var(--dark-bg); color: var(--text-light);
+            height: 100vh; max-height: 615px; overflow: hidden;
+            display: flex; flex-direction: column;
         }
 
+        /* HUD */
         .hud {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            height: 50px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 5px 20px; background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(155, 89, 182, 0.2); height: 45px; flex-shrink: 0;
         }
-
-        .hud h1 {
-            font-family: 'Orbitron';
-            margin: 0;
-            color: var(--primary);
-            font-size: 1.2rem;
-        }
-
+        .hud h1 { font-family: 'Orbitron'; margin: 0; color: var(--primary); font-size: 1.1rem; }
         .hud-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Orbitron';
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white; padding: 4px 12px; border-radius: 20px;
+            cursor: pointer; transition: 0.2s; font-family: 'Orbitron';
+            text-decoration: none; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
         }
+        .hud-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .btn-code { border-color: var(--accent); color: var(--accent); }
+        .btn-code:hover { background: var(--accent); color: #10142b; border-color: var(--accent); }
 
+        /* Oyun Alanı */
         .stage {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            width: 100%;
+            flex-grow: 1; display: flex; flex-direction: column;
+            align-items: center; padding: 10px; position: relative;
         }
 
-        .spirit-emoji {
-            font-size: 6rem;
-            margin-bottom: 10px;
-            filter: drop-shadow(0 0 20px rgba(52, 152, 219, 0.6));
+        .info-panel {
+            background: rgba(155, 89, 182, 0.1); border: 1px solid var(--primary);
+            padding: 10px 15px; border-radius: 8px; color: #fff;
+            font-weight: 600; font-size: 0.9rem; margin-bottom: 10px;
+            width: 90%; max-width: 600px; text-align: center;
         }
 
-        .question-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 15px;
-            max-width: 300px;
-            margin: 0 auto;
-            font-size: 0.9rem;
+        /* Etkileşimli Tuval */
+        .canvas-container {
+            width: 90%; max-width: 600px; height: 280px;
+            background-color: var(--canvas-bg);
+            background-image: 
+                radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                radial-gradient(rgba(155,89,182,0.1) 2px, transparent 2px);
+            background-size: 20px 20px, 100px 100px;
+            border: 2px solid #5e35b1; border-radius: 12px;
+            position: relative; cursor: crosshair;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+        canvas { width: 100%; height: 100%; border-radius: 10px; }
+
+        /* Kontrol Paneli */
+        .control-panel {
+            width: 90%; max-width: 600px; margin-top: 15px;
+            background: rgba(255, 255, 255, 0.05); padding: 15px;
+            border-radius: 12px; display: flex; flex-direction: column; gap: 10px;
+            box-sizing: border-box; text-align: center;
         }
 
-        .shapes-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+        .action-row { display: flex; justify-content: center; gap: 15px; }
+        
+        .tool-btn {
+            background: #2c3e50; border: none; color: white;
+            padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron';
+            font-size: 0.85rem; cursor: not-allowed; opacity: 0.5; transition: 0.3s;
+            display: flex; align-items: center; gap: 5px;
         }
+        .tool-btn.active.isin { border: 1px solid #00d2d3; color: #00d2d3; cursor: pointer; opacity: 1; }
+        .tool-btn.active.isin:hover { background: #00d2d3; color: #10142b; box-shadow: 0 0 15px #00d2d3;}
+        
+        .tool-btn.active.dogru { border: 1px solid #2ecc71; color: #2ecc71; cursor: pointer; opacity: 1; }
+        .tool-btn.active.dogru:hover { background: #2ecc71; color: #10142b; box-shadow: 0 0 15px #2ecc71;}
 
-        .shape-btn {
-            width: 100px;
-            height: 70px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #2c3e50;
-            transition: 0.3s;
-            position: relative;
-            font-size: 0.8rem;
-        }
-
-        .shape-btn:hover {
-            transform: scale(1.1);
-            border-color: white;
-        }
-
-        .s-elips {
-            background: #e74c3c;
-            border-radius: 50px;
-        }
-
-        .s-paralel {
-            background: #3498db;
-            transform: skewX(-20deg);
-        }
-
-        .s-paralel span {
-            transform: skewX(20deg);
-        }
-
-        /* Text fix */
-        .s-dikdortgen {
-            background: #f1c40f;
-        }
-
-        .s-eskenar {
-            background: #9b59b6;
-            transform: rotate(45deg);
-            width: 80px;
-            height: 80px;
-            margin: 20px;
-        }
-
-        .s-eskenar span {
-            transform: rotate(-45deg);
-            display: block;
-        }
-
+        /* Modallar */
         .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(5px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); display: none; justify-content: center;
+            align-items: center; z-index: 100; backdrop-filter: blur(3px);
         }
-
         .modal-box {
-            background: white;
-            color: #2c3e50;
-            padding: 40px;
-            border-radius: 20px;
-            max-width: 500px;
-            text-align: center;
-            position: relative;
+            background: var(--dark-bg); border: 1px solid var(--primary);
+            color: var(--text-light); padding: 20px; border-radius: 15px;
+            max-width: 450px; width: 85%; text-align: center; position: relative;
         }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
-            cursor: pointer;
-        }
-
-        .code-block {
-            background: #2d3436;
-            color: #f1f2f6;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: left;
-            font-family: monospace;
-            margin: 20px 0;
-            border-left: 4px solid #f1c40f;
-        }
+        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #8395a7; }
     </style>
 </head>
-
 <body>
 
     <div class="hud">
         <a href="index.html" class="hud-btn">❮ MENÜ</a>
-        <h1>ŞEKİL RUHLARI</h1>
-        <div style="display:flex; gap:10px;">
+        <h1>LAZER SAVUNMASI</h1>
+        <div style="display:flex; gap:8px;">
             <button class="hud-btn" onclick="openModal('missionModal')">📜 GÖREV</button>
             <button class="hud-btn btn-code" onclick="openModal('codeModal')">💻 KODLA</button>
         </div>
     </div>
 
     <div class="stage">
-        <div class="spirit-container">
-            <div class="spirit-emoji">👻</div>
-            <div class="question-box">
-                <p id="q-text">Hazır mısın?</p>
-            </div>
+        <div class="info-panel" id="instruction">
+            ☄️ Lazerin çıkacağı <b>A Noktası'nı</b> (Enerji Kaynağı) işaretle.
         </div>
 
-        <div class="shapes-grid">
-            <div class="shape-btn s-elips" onclick="checkAnswer('elips')"><span>BAŞLA</span></div>
-            <div class="shape-btn s-paralel" onclick="checkAnswer('paralel')"><span>GİRİŞ</span></div>
-            <div class="shape-btn s-dikdortgen" onclick="checkAnswer('dikdortgen')"><span>İŞLEM</span></div>
-            <div class="shape-btn s-eskenar" onclick="checkAnswer('eskenar')"><span>KARAR</span></div>
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div class="control-panel">
+            <div style="font-size:0.85rem; color:#8395a7; margin-bottom: 5px;">Savunma Türünü Seç:</div>
+            <div class="action-row">
+                <button class="tool-btn isin" id="isinBtn" onclick="atesle('isin')">🔥 IŞIN (Tek Yönlü)</button>
+                <button class="tool-btn dogru" id="dogruBtn" onclick="atesle('dogru')">🛡️ DOĞRU (Çift Yönlü)</button>
+            </div>
         </div>
     </div>
 
-    <!-- Mission -->
     <div class="modal" id="missionModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('missionModal')">&times;</span>
-            <h2 style="color:var(--primary); font-family:'Orbitron'">GÖREV TALİMATI</h2>
-            <p>Orman ruhları seninle konuşmak istiyor ama sadece <b>Şekil Dili</b> biliyorlar.</p>
-            <p>Sana sordukları komutun hangi geometrik şekil olduğunu seçerek onlara cevap ver.</p>
+            <h2 style="color:var(--primary); margin-top:0;">GÖREV TALİMATI</h2>
+            
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:left; margin-bottom:15px; border-left:4px solid var(--primary);">
+                <h3 style="color:var(--primary); font-size:0.95rem; margin:0 0 5px 0;">Öğrenme Çıktısı (MAT.5.3.1)</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>Kazanım:</b> Ölçüsüz cetvel (çizgeç) yardımıyla ortaya çıkan şekilleri "ışın" ve "doğru" olarak tanımlayabilme.</p>
+            </div>
+
+            <div style="background:rgba(241, 196, 15,0.1); padding:15px; border-radius:10px; text-align:left; border-left:4px solid var(--accent);">
+                <h3 style="color:var(--accent); font-size:0.95rem; margin:0 0 5px 0;">Bu Alıştırmanın Sana Faydası</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>IŞIN:</b> Başlangıç noktası bellidir ama sonu yoktur, bir yöne sonsuza gider (Lazer gibi).<br><br><b>DOĞRU:</b> Ne başlangıcı ne de sonu vardır. İki yöne de sonsuza uzanır. Farkı kendi gözlerinle gör!</p>
+            </div>
         </div>
     </div>
 
-    <!-- Code -->
     <div class="modal" id="codeModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('codeModal')">&times;</span>
-            <h2 style="color:#f1c40f; font-family:'Orbitron'">KOD LABORATUVARI</h2>
-            <p>Akış şemaları (Flowchart), kod yazmadan önce mantığı çizerek kurmamızı sağlar.</p>
-            <div class="code-block">
-                Elips -> Başla/Bitir<br>
-                Paralelkenar -> Veri Oku/Yaz<br>
-                Dikdörtgen -> Hesapla (x = 5+3)<br>
-                Eşkenar D. -> Eğer (x > 10)
+            <h2 style="color:var(--accent); margin-top:0;">KOD LABORATUVARI</h2>
+            <p style="font-size:0.85rem;">Bilgisayarlar Işın çizerken trigonometri (Açı hesabı) kullanarak çizgiyi ekranın sonuna kadar uzatırlar. Kendi kodunu kopyala ve renkleri değiştir!</p>
+            
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()" style="padding:10px 15px; font-size:0.8rem; font-weight:bold;">📄 KODU KOPYALA</button>
+                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code" style="padding:10px 15px; font-size:0.8rem; background:var(--accent); color:#10142b; font-weight:bold;">💻 EDİTÖRDE DENE</a>
             </div>
-            <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
-                style="display:inline-block; margin-top:10px;">EDİTÖRÜ AÇ</a>
         </div>
     </div>
 
-    <!-- Modals for Win/Lose -->
     <div class="modal" id="resultModal">
         <div class="modal-box">
-            <h2 id="res-title" style="font-family:'Orbitron'"></h2>
-            <p id="res-desc"></p>
-            <button class="hud-btn" id="res-btn"
-                style="display:inline-block; margin-top:10px; background:#2ecc71;">DEVAM ET</button>
+            <div id="res-emoji" style="font-size:3rem; margin-bottom:5px;"></div>
+            <h2 id="res-title" style="color:var(--primary);"></h2>
+            <p id="res-desc" style="font-size:0.9rem; line-height: 1.5;"></p>
+            <button class="hud-btn" onclick="closeModal('resultModal'); resetGame();" style="display:inline-block; margin-top:10px; background:var(--primary); padding:10px 30px;">TEKRAR DENE</button>
+            <button class="hud-btn" onclick="location.href='index.html'" style="display:inline-block; margin-top:10px; background:#2c3e50; padding:10px 30px;">MENÜYE DÖN</button>
         </div>
     </div>
 
     <script>
-        const questions = [
-            { id: 'elips', text: "Programı BAŞLATMAK veya BİTİRMEK için hangi şekli kullanmalıyım?" },
-            { id: 'paralel', text: "Kullanıcıdan bir SAYI İSTEMEK (Veri Girişi) için hangi şekli kullanmalıyım?" },
-            { id: 'dikdortgen', text: "İki sayıyı TOPLAMAK (İşlem/Hesap) için hangi şekli kullanmalıyım?" },
-            { id: 'eskenar', text: "Sayının BÜYÜK olup olmadığına KARAR VERMEK için hangi şekli kullanmalıyım?" },
-            // New Questions
-            { id: 'elips', text: "Algoritmanın sonuna geldik. BİTİR komutu için hangi şekil gerekir?" },
-            { id: 'dikdortgen', text: "Bir değişkenin değerini 1 ARTIRMAK (x = x + 1) için hangi şekli seçmeliyim?" },
-            { id: 'eskenar', text: "Kullanıcının şifresi DOĞRU MU diye kontrol etmek için hangisi uygundur?" },
-            { id: 'paralel', text: "Ekrana 'Merhaba Dünya' YAZDIRMAK (Çıktı) için hangi şekli kullanmalıyım?" }
-        ];
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const instText = document.getElementById('instruction');
+        const isinBtn = document.getElementById('isinBtn');
+        const dogruBtn = document.getElementById('dogruBtn');
 
-        let qIndex = 0;
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawCanvas();
+        }
+        window.addEventListener('resize', resizeCanvas);
 
-        function loadQuestion() {
-            if (qIndex >= questions.length) {
-                // Game Over
-                document.getElementById('res-title').innerText = "HARİKA!";
-                document.getElementById('res-title').style.color = "#2ecc71";
-                document.getElementById('res-desc').innerText = "Tüm şekilleri doğru bildin.";
-                document.getElementById('res-btn').onclick = () => location.href = 'index.html';
-                openModal('resultModal');
-                return;
+        let state = 0; // 0: A bekle, 1: B bekle, 2: Ateşleme
+        let ptA = null;
+        let ptB = null;
+
+        canvas.addEventListener('mousedown', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            if (state === 0) {
+                ptA = {x, y};
+                state = 1;
+                instText.innerHTML = "☄️ Harika! Lazerin YÖNÜNÜ belirlemek için <b>B Noktasını</b> seç.";
+                drawCanvas();
+            } 
+            else if (state === 1) {
+                // Noktalar arası mesafe kontrolü (Çok yakın olmasın)
+                const dist = Math.hypot(x - ptA.x, y - ptA.y);
+                if(dist < 30) {
+                    instText.innerHTML = "⚠️ Hedef çok yakın! B noktasını biraz daha uzağa seç.";
+                    return;
+                }
+                ptB = {x, y};
+                state = 2;
+                instText.innerHTML = "🛡️ Hedef kilitlendi! Aşağıdan silah türünü seç (Işın veya Doğru).";
+                isinBtn.classList.add('active');
+                dogruBtn.classList.add('active');
+                drawCanvas();
             }
-            document.getElementById('q-text').innerText = questions[qIndex].text;
+        });
+
+        function atesle(tur) {
+            if(state !== 2) return;
+            drawCanvas(); // Temizle
+            
+            // Açıyı bul
+            const angle = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+            const dist = 2000; // Sonsuzluk hissi için büyük sayı
+
+            ctx.lineWidth = 4;
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+
+            if (tur === 'isin') {
+                ctx.strokeStyle = "#00d2d3";
+                ctx.shadowColor = "#00d2d3";
+                ctx.moveTo(ptA.x, ptA.y); // A'dan başla
+                ctx.lineTo(ptA.x + Math.cos(angle) * dist, ptA.y + Math.sin(angle) * dist);
+                ctx.stroke();
+                localStorage.setItem('sifre_2', 'E');
+                
+                setTimeout(() => {
+                    showResult("IŞIN FIRLATILDI! 💥", "Fark ettin mi? Işının bir başlangıç noktası (A noktası) vardır ama sonu yoktur. Tek bir yöne doğru sonsuza kadar uzanır.", "🔥");
+                }, 800);
+            } 
+            else if (tur === 'dogru') {
+                ctx.strokeStyle = "#2ecc71";
+                ctx.shadowColor = "#2ecc71";
+                // Hem geriye hem ileriye sonsuz
+                ctx.moveTo(ptA.x - Math.cos(angle) * dist, ptA.y - Math.sin(angle) * dist); 
+                ctx.lineTo(ptA.x + Math.cos(angle) * dist, ptA.y + Math.sin(angle) * dist);
+                ctx.stroke();
+                localStorage.setItem('sifre_2', 'E');
+                setTimeout(() => {
+                    showResult("DOĞRU KALKANI AÇILDI! 🛡️", "Fark ettin mi? Doğrunun ne başlangıcı ne de sonu vardır. Her iki yöne doğru sonsuza kadar uzanır.", "🌌");
+                }, 800);
+            }
+            ctx.shadowBlur = 0; // Gölgeyi sıfırla
         }
 
-        function checkAnswer(shapeId) {
-            if (shapeId === questions[qIndex].id) {
-                // Correct
-                qIndex++;
-                loadQuestion();
-            } else {
-                // Wrong
-                document.getElementById('res-title').innerText = "YANLIŞ CEVAP";
-                document.getElementById('res-title').style.color = "#e74c3c";
-                document.getElementById('res-desc').innerText = "Bu şekil o anlama gelmiyor. Tekrar dene.";
-                document.getElementById('res-btn').innerText = "TEKRAR DENE";
-                document.getElementById('res-btn').onclick = () => closeModal('resultModal');
-                openModal('resultModal');
-            }
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (ptA) drawPoint(ptA.x, ptA.y, "A", "#f1c40f");
+            if (ptB) drawPoint(ptB.x, ptB.y, "B", "#e74c3c");
         }
 
-        window.onload = loadQuestion;
+        function drawPoint(x, y, label, color) {
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            
+            ctx.font = "bold 14px Orbitron";
+            ctx.fillStyle = "#fff";
+            ctx.fillText(label, x - 5, y - 12);
+        }
+
+        function showResult(title, desc, emoji) {
+            document.getElementById('res-emoji').innerText = emoji;
+            document.getElementById('res-title').innerText = title;
+            document.getElementById('res-desc').innerHTML = desc;
+            openModal('resultModal');
+        }
+
+        function resetGame() {
+            state = 0;
+            ptA = null;
+            ptB = null;
+            isinBtn.classList.remove('active');
+            dogruBtn.classList.remove('active');
+            instText.innerHTML = "☄️ Lazerin çıkacağı <b>A Noktası'nı</b> (Enerji Kaynağı) işaretle.";
+            drawCanvas();
+        }
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // MÜKEMMEL ÇÖZÜM: DIŞARIDAN FETCH İLE ÖĞRENCİ KODUNU ALMA
+        function copyStudentCode() {
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = "⌛ BEKLEYİN...";
+
+            // ogrenci_kodu2.txt dosyasını dışarıdan çekiyoruz
+            fetch('ogrenci_kodu2.txt')
+                .then(response => {
+                    if (!response.ok) { throw new Error("Dosya bulunamadı!"); }
+                    return response.text();
+                })
+                .then(kodMetni => {
+                    return navigator.clipboard.writeText(kodMetni);
+                })
+                .then(() => {
+                    btn.innerHTML = "✓ KOPYALANDI";
+                    btn.style.background = "#2ecc71";
+                    btn.style.borderColor = "#2ecc71";
+                    btn.style.color = "#10142b";
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = "📄 KODU KOPYALA";
+                        btn.style.background = "transparent";
+                        btn.style.borderColor = "var(--accent)";
+                        btn.style.color = "var(--accent)";
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Hata: ', err);
+                    btn.innerHTML = "❌ HATA OLUŞTU";
+                    alert("Kod alınamadı! Lütfen ogrenci_kodu2.txt dosyasının aynı klasörde olduğundan (veya sunucu üzerinden çalıştığınızdan) emin olun.");
+                    setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; }, 2000);
+                });
+        }
+
+        // Başlangıç kurulumu
+        resizeCanvas();
     </script>
 </body>
-
 </html>

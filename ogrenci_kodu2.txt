@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Benim Lazer Savunma Projem</title>
+    <style>
+        /* ========================================================
+           🎨 1. GÖREV: TASARIM VE RENKLER (CSS BÖLÜMÜ)
+           Aşağıdaki renkleri değiştirmeyi dene!
+           ======================================================== */
+        body { 
+            background-color: #1a0b2e; /* Uzayın arka plan rengi */
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; margin-top: 30px; 
+        }
+
+        #gameCanvas { 
+            background-color: #2d1b4e; /* Radar ekranının rengi */
+            border: 4px solid #9b59b6; /* Radar çerçevesi */
+            border-radius: 15px; 
+            cursor: crosshair; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.5);
+        }
+
+        button { 
+            background-color: #9b59b6; color: white; border: none; 
+            padding: 10px 20px; font-size: 16px; font-weight: bold; 
+            border-radius: 8px; cursor: pointer; margin: 5px;
+            display: none; /* Başlangıçta butonlar gizli */
+        }
+        
+        #butonGrubu { text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>☄️ Lazer Savunma Sistemi</h1>
+    <h3 id="mesaj">Önce lazerin çıkacağı 'A Noktası'nı (Enerji Kaynağı) işaretle!</h3>
+
+    <canvas id="gameCanvas" width="600" height="300"></canvas>
+    
+    <div id="butonGrubu">
+        <button id="isinBtn" onclick="atesle('isin')">🔥 IŞIN FIRLAT (Tek Yönlü)</button>
+        <button id="dogruBtn" onclick="atesle('dogru')">🛡️ DOĞRU KALKANI (Çift Yönlü)</button>
+    </div>
+
+    <script>
+        // ========================================================
+        // 🛠️ 3. GÖREV: OYUN AYARLARI (JAVASCRIPT BÖLÜMÜ)
+        // Lazerin rengini, kalınlığını ve mesajları buradan ayarla!
+        // ========================================================
+        
+        let enerjiNoktasiRengi = "#f1c40f"; // A noktasının rengi (Sarı)
+        let hedefNoktasiRengi = "#e74c3c";  // B noktasının rengi (Kırmızı)
+        
+        let isinRengi = "#00d2d3";    // Işının (Lazerin) rengi
+        let dogruRengi = "#2ecc71";   // Doğru kalkanının rengi
+        let lazerKalinligi = 6;       // Lazerin kalınlığı (Büyütmeyi dene!)
+        
+        // ========================================================
+        // ⚠️ DİKKAT: BURADAN AŞAĞISI OYUNUN BEYNİDİR (MOTORU). 
+        // ========================================================
+
+        const tuval = document.getElementById("gameCanvas");
+        const cizimAraci = tuval.getContext("2d");
+        const mesajKutusu = document.getElementById("mesaj");
+        const btnGrup = document.getElementById("butonGrubu");
+        const isinBtn = document.getElementById("isinBtn");
+        const dogruBtn = document.getElementById("dogruBtn");
+
+        let asama = 0; 
+        let noktaA = null;
+        let noktaB = null;
+
+        tuval.addEventListener("mousedown", function(olay) {
+            const x = olay.offsetX;
+            const y = olay.offsetY;
+
+            if (asama === 0) {
+                noktaA = { x: x, y: y }; 
+                asama = 1;
+                mesajKutusu.innerHTML = "Harika! Şimdi hedefin yönünü belirlemek için 'B Noktası' seç.";
+                cizimiGuncelle();
+            } 
+            else if (asama === 1) {
+                noktaB = { x: x, y: y }; 
+                asama = 2;
+                mesajKutusu.innerHTML = "Hedef kilitlendi! Aşağıdan silah türünü seç:";
+                isinBtn.style.display = "inline-block"; 
+                dogruBtn.style.display = "inline-block"; 
+                cizimiGuncelle();
+            }
+        });
+
+        function atesle(tur) {
+            cizimiGuncelle(); // Ekranı temizle ve noktaları çiz
+            
+            // Açıyı hesapla (Matematik/Trigonometri)
+            const aci = Math.atan2(noktaB.y - noktaA.y, noktaB.x - noktaA.x);
+            const cokUzakBirMesafe = 2000; // Ekrandan taşması için büyük bir sayı
+            
+            cizimAraci.lineWidth = lazerKalinligi;
+            cizimAraci.beginPath();
+
+            if (tur === 'isin') {
+                // IŞIN: Sadece A'dan başlar, sonsuza (çok uzağa) gider.
+                cizimAraci.strokeStyle = isinRengi;
+                cizimAraci.moveTo(noktaA.x, noktaA.y); // A'dan başla
+                cizimAraci.lineTo(noktaA.x + Math.cos(aci) * cokUzakBirMesafe, noktaA.y + Math.sin(aci) * cokUzakBirMesafe);
+                mesajKutusu.innerHTML = "IŞIN: Başlangıç noktası belli (A), ama sonu yok! Sonsuza uzanır.";
+            } 
+            else if (tur === 'dogru') {
+                // DOĞRU: İki yöne de sonsuza gider.
+                cizimAraci.strokeStyle = dogruRengi;
+                cizimAraci.moveTo(noktaA.x - Math.cos(aci) * cokUzakBirMesafe, noktaA.y - Math.sin(aci) * cokUzakBirMesafe); // Geriye sonsuz
+                cizimAraci.lineTo(noktaA.x + Math.cos(aci) * cokUzakBirMesafe, noktaA.y + Math.sin(aci) * cokUzakBirMesafe); // İleriye sonsuz
+                mesajKutusu.innerHTML = "DOĞRU: Başlangıcı ve sonu yoktur! Her iki yöne de sonsuz uzanır.";
+            }
+            cizimAraci.stroke();
+            
+            // Tuvalin dışına taşan çizgiyi kes
+            cizimAraci.rect(0, 0, tuval.width, tuval.height);
+        }
+
+        function cizimiGuncelle() {
+            cizimAraci.clearRect(0, 0, tuval.width, tuval.height);
+            if (noktaA !== null) { noktayiCiz(noktaA.x, noktaA.y, "A", enerjiNoktasiRengi, 8); }
+            if (noktaB !== null) { noktayiCiz(noktaB.x, noktaB.y, "B", hedefNoktasiRengi, 8); }
+        }
+
+        function noktayiCiz(x, y, harf, renk, boyut) {
+            cizimAraci.beginPath();
+            cizimAraci.arc(x, y, boyut, 0, Math.PI * 2);
+            cizimAraci.fillStyle = renk;
+            cizimAraci.fill();
+            cizimAraci.fillStyle = "white";
+            cizimAraci.font = "bold 16px sans-serif";
+            cizimAraci.fillText(harf, x - 5, y - (boyut + 5));
+        }
+    </script>
+</body>
+</html>
