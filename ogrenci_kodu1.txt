@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Benim Doğru Parçası Projem</title>
+    <style>
+        /* ========================================================
+           🎨 1. GÖREV: TASARIM VE RENKLER (CSS BÖLÜMÜ)
+           Aşağıdaki İngilizce renk isimlerini değiştirmeyi dene!
+           Örnek renkler: "black" (siyah), "darkblue" (koyu mavi), "purple" (mor)
+           ======================================================== */
+        body { 
+            background-color: #10142b; /* <-- ARKA PLAN RENGİ BURADA */
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; flex-direction: column; align-items: center; margin-top: 30px; 
+        }
+
+        #gameCanvas { 
+            background-color: #1e2749; /* <-- UZAY HARİTASININ RENGİ */
+            border: 4px solid #00d2d3; /* <-- HARİTANIN ÇERÇEVE RENGİ */
+            border-radius: 15px; 
+            cursor: crosshair; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 20px rgba(0, 210, 211, 0.4);
+        }
+
+        /* Düğmelerin tasarımı */
+        button { 
+            background-color: #00d2d3; color: #10142b; border: none; 
+            padding: 12px 25px; font-size: 18px; font-weight: bold; 
+            border-radius: 8px; cursor: pointer; display: none; 
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.1); } /* Fare üzerine gelince büyür */
+
+        #sliderGrup { display: none; text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Kendi Doğru Parçamı Çiziyorum</h1>
+    
+    <h3 id="mesaj">Önce uzayda bir 'A Noktası' işaretlemek için kutuya tıkla!</h3>
+
+    <canvas id="gameCanvas" width="600" height="300"></canvas>
+    
+    <button id="cetvelBtn" onclick="cetveliAl()">📏 ÇİZGEÇ (CETVEL) KULLAN</button>
+    
+    <div id="sliderGrup">
+        <p>Noktaları Sıklaştır (Lazer Yoğunluğu)</p>
+        <input type="range" id="yogunluk" min="0" max="100" value="0" oninput="cizimiGuncelle()" style="width: 300px;">
+    </div>
+
+    <script>
+        // ========================================================
+        // 🛠️ 3. GÖREV: OYUN AYARLARI (JAVASCRIPT BÖLÜMÜ)
+        // Aşağıdaki değerleri değiştirerek oyunun kurallarını belirle!
+        // Sadece tırnak içindeki yazıları veya sayıları değiştir.
+        // ========================================================
+        
+        let noktaA_Rengi = "#ff9f43";  // A noktasının rengi (Örn: "red", "yellow")
+        let noktaB_Rengi = "#00d2d3";  // B noktasının rengi (Örn: "green", "pink")
+        
+        let araNoktaRengi = "#ffffff"; // Slider ile eklenen küçük noktaların rengi ("white" yapabilirsin)
+        
+        let anaNoktaBoyutu = 8;        // A ve B noktalarının büyüklüğü (5 yaparsan küçülür, 15 yaparsan kocaman olur!)
+        let araNoktaBoyutu = 3;        // Lazerin içindeki küçük noktaların büyüklüğü
+        
+        let tebrikMesaji = "MÜKEMMEL! Yan yana gelen sayısız nokta bir DOĞRU PARÇASI oluşturdu! 🎉"; // Bitiş mesajın
+        
+        // ========================================================
+        // ⚠️ DİKKAT: BURADAN AŞAĞISI OYUNUN BEYNİDİR (MOTORU). 
+        // EĞER KODLAMADA YENİYSEN BURAYI DEĞİŞTİRMEMENİ TAVSİYE EDERİZ!
+        // ========================================================
+
+        const tuval = document.getElementById("gameCanvas");
+        const cizimAraci = tuval.getContext("2d");
+        const mesajKutusu = document.getElementById("mesaj");
+        const cetvelButonu = document.getElementById("cetvelBtn");
+        const sliderGrup = document.getElementById("sliderGrup");
+        const slider = document.getElementById("yogunluk");
+
+        let asama = 0; 
+        let noktaA = null;
+        let noktaB = null;
+        let cetvelAktif = false;
+
+        // Fare ile tıklama algılayıcı
+        tuval.addEventListener("mousedown", function(olay) {
+            const x = olay.offsetX;
+            const y = olay.offsetY;
+
+            if (asama === 0) {
+                noktaA = { x: x, y: y }; 
+                asama = 1;
+                mesajKutusu.innerHTML = "Harika! Şimdi bitiş için 'B Noktası' işaretle.";
+                cizimiGuncelle();
+            } 
+            else if (asama === 1) {
+                noktaB = { x: x, y: y }; 
+                asama = 2;
+                mesajKutusu.innerHTML = "İki nokta da hazır! Çizgeç (Cetvel) butonuna tıkla.";
+                cetvelButonu.style.display = "block"; 
+                cizimiGuncelle();
+            }
+        });
+
+        // Cetvel butonuna basılınca çalışır
+        function cetveliAl() {
+            cetvelAktif = true;
+            asama = 3;
+            cetvelButonu.style.display = "none"; 
+            sliderGrup.style.display = "block"; 
+            mesajKutusu.innerHTML = "Çizgeç yerleşti! Noktaları birleştirmek için aşağıdaki çubuğu sağa kaydır.";
+            cizimiGuncelle();
+        }
+
+        // Çizimleri ekrana yansıtan fonksiyon
+        function cizimiGuncelle() {
+            cizimAraci.clearRect(0, 0, tuval.width, tuval.height); // Ekranı temizle
+
+            if (cetvelAktif) {
+                cizimAraci.strokeStyle = "rgba(255, 255, 255, 0.2)"; 
+                cizimAraci.lineWidth = 20; 
+                cizimAraci.beginPath();
+                cizimAraci.moveTo(noktaA.x, noktaA.y);
+                cizimAraci.lineTo(noktaB.x, noktaB.y);
+                cizimAraci.stroke();
+            }
+
+            if (asama === 3) {
+                let deger = parseInt(slider.value); 
+                
+                if (deger > 0) {
+                    let aradakiNoktaSayisi = deger; 
+                    
+                    cizimAraci.fillStyle = araNoktaRengi; // Ayarlardan gelen rengi kullan
+                    
+                    for (let i = 1; i <= aradakiNoktaSayisi; i++) {
+                        let oran = i / aradakiNoktaSayisi;
+                        let yeniX = noktaA.x + (noktaB.x - noktaA.x) * oran;
+                        let yeniY = noktaA.y + (noktaB.y - noktaA.y) * oran;
+                        
+                        cizimAraci.beginPath();
+                        cizimAraci.arc(yeniX, yeniY, araNoktaBoyutu, 0, Math.PI * 2); // Ayarlardan gelen boyutu kullan
+                        cizimAraci.fill();
+                    }
+                }
+                if (deger === 100) {
+                    mesajKutusu.innerHTML = tebrikMesaji; // Ayarlardan gelen mesajı kullan
+                }
+            }
+            if (noktaA !== null) { noktayiCiz(noktaA.x, noktaA.y, "A", noktaA_Rengi, anaNoktaBoyutu); }
+            if (noktaB !== null) { noktayiCiz(noktaB.x, noktaB.y, "B", noktaB_Rengi, anaNoktaBoyutu); }
+        }
+
+        // Tek bir noktayı çizen yardımcı fonksiyon
+        function noktayiCiz(x, y, harf, renk, boyut) {
+            cizimAraci.beginPath();
+            cizimAraci.arc(x, y, boyut, 0, Math.PI * 2);
+            cizimAraci.fillStyle = renk;
+            cizimAraci.fill();
+            cizimAraci.fillStyle = "white";
+            cizimAraci.font = "bold 16px sans-serif";
+            cizimAraci.fillText(harf, x - 5, y - (boyut + 5)); // Harfi noktanın tam üstüne hizala
+        }
+    </script>
+</body>
+</html>

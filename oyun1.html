@@ -325,183 +325,47 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // Öğrenci Kod Kopyalama Sistemi - GİZLENMİŞ KAPATMA ETİKETİ İLE
+        // --- ÖĞRENCİNİN PARLAK FİKRİ: KAPANIŞ ETİKETLERİNİ SONRADAN EKLİYORUZ ---
+        // Dışarıdan Dosyayı Okuyup Kopyalayan Fonksiyon
         function copyStudentCode() {
-            const studentCode = `<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>Benim Doğru Parçası Projem</title>
-    <style>
-        /* İPUCU 1: Sayfanın arka plan rengini buradan değiştirebilirsin. 
-           "#10142b" yazan yeri "black", "darkblue" veya "purple" yapmayı dene! 
-        */
-        body {
-            background-color: #10142b;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
-        }
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = "⌛ BEKLEYİN...";
 
-        /* İPUCU 2: Çizim alanının (tuvalin) rengini ve kenarlıklarını buradan ayarlayabilirsin.
-           "border" kısmındaki rengi değiştirirsen çerçevenin rengi değişir.
-        */
-        #gameCanvas {
-            background-color: #1e2749;
-            border: 3px solid #00d2d3;
-            border-radius: 10px;
-            cursor: crosshair;
-            margin-bottom: 20px;
-        }
-
-        button {
-            background-color: #00d2d3;
-            color: #10142b;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            display: none; 
-        }
-
-        #sliderGrup {
-            display: none; 
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <h1>Kendi Doğru Parçamı Çiziyorum</h1>
-    
-    <h3 id="mesaj">Önce uzayda bir 'A Noktası' işaretlemek için kutuya tıkla!</h3>
-
-    <canvas id="gameCanvas" width="600" height="300"></canvas>
-
-    <button id="cetvelBtn" onclick="cetveliAl()">📏 ÇİZGEÇ (CETVEL) KULLAN</button>
-
-    <div id="sliderGrup">
-        <p>Noktaları Sıklaştır (Lazer Yoğunluğu)</p>
-        <input type="range" id="yogunluk" min="0" max="100" value="0" oninput="cizimiGuncelle()" style="width: 300px;">
-    </div>
-
-    <script>
-        const tuval = document.getElementById("gameCanvas");
-        const cizimAraci = tuval.getContext("2d");
-        const mesajKutusu = document.getElementById("mesaj");
-        const cetvelButonu = document.getElementById("cetvelBtn");
-        const sliderGrup = document.getElementById("sliderGrup");
-        const slider = document.getElementById("yogunluk");
-
-        let asama = 0; 
-        let noktaA = null;
-        let noktaB = null;
-        let cetvelAktif = false;
-
-        tuval.addEventListener("mousedown", function(olay) {
-            const x = olay.offsetX;
-            const y = olay.offsetY;
-
-            if (asama === 0) {
-                noktaA = { x: x, y: y }; 
-                asama = 1;
-                mesajKutusu.innerHTML = "Harika! Şimdi bitiş için 'B Noktası' işaretle.";
-                cizimiGuncelle();
-            } 
-            else if (asama === 1) {
-                noktaB = { x: x, y: y }; 
-                asama = 2;
-                mesajKutusu.innerHTML = "İki nokta da hazır! Çizgeç (Cetvel) butonuna tıkla.";
-                cetvelButonu.style.display = "block"; 
-                cizimiGuncelle();
-            }
-        });
-
-        function cetveliAl() {
-            cetvelAktif = true;
-            asama = 3;
-            cetvelButonu.style.display = "none"; 
-            sliderGrup.style.display = "block"; 
-            mesajKutusu.innerHTML = "Çizgeç yerleşti! Noktaları birleştirmek için aşağıdaki çubuğu sağa kaydır.";
-            cizimiGuncelle();
-        }
-
-        function cizimiGuncelle() {
-            cizimAraci.clearRect(0, 0, tuval.width, tuval.height);
-
-            if (cetvelAktif) {
-                cizimAraci.strokeStyle = "rgba(255, 255, 255, 0.2)"; 
-                cizimAraci.lineWidth = 20; 
-                cizimAraci.beginPath();
-                cizimAraci.moveTo(noktaA.x, noktaA.y);
-                cizimAraci.lineTo(noktaB.x, noktaB.y);
-                cizimAraci.stroke();
-            }
-
-            if (asama === 3) {
-                let deger = parseInt(slider.value); 
-                
-                if (deger > 0) {
-                    let aradakiNoktaSayisi = deger; 
-                    
-                    // İPUCU 5: Çizilecek ara noktaların rengini buradan değiştirebilirsin!
-                    cizimAraci.fillStyle = "#00d2d3"; 
-                    
-                    for (let i = 1; i <= aradakiNoktaSayisi; i++) {
-                        let oran = i / aradakiNoktaSayisi;
-                        let yeniX = noktaA.x + (noktaB.x - noktaA.x) * oran;
-                        let yeniY = noktaA.y + (noktaB.y - noktaA.y) * oran;
-                        
-                        cizimAraci.beginPath();
-                        // İPUCU 6: Aşağıdaki "3" sayısı ara noktaların büyüklüğüdür.
-                        cizimAraci.arc(yeniX, yeniY, 3, 0, Math.PI * 2);
-                        cizimAraci.fill();
+            // ogrenci_kodu.txt dosyasını dışarıdan çekiyoruz (Fetch API)
+            fetch('ogrenci_kodu1.txt')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Dosya bulunamadı!");
                     }
-                }
-
-                if (deger === 100) {
-                    mesajKutusu.innerHTML = "Tebrikler! Yan yana gelen noktalar bir DOĞRU PARÇASI oluşturdu!";
-                }
-            }
-
-            if (noktaA !== null) { noktayiCiz(noktaA.x, noktaA.y, "A", "#ff9f43"); }
-            if (noktaB !== null) { noktayiCiz(noktaB.x, noktaB.y, "B", "#00d2d3"); }
-        }
-
-        function noktayiCiz(x, y, harf, renk) {
-            cizimAraci.beginPath();
-            cizimAraci.arc(x, y, 6, 0, Math.PI * 2);
-            cizimAraci.fillStyle = renk;
-            cizimAraci.fill();
-            cizimAraci.fillStyle = "white";
-            cizimAraci.font = "16px Arial";
-            cizimAraci.fillText(harf, x - 5, y - 10);
-        }
-    ${'</script>'}
-</body>
-</html>`;
-
-            navigator.clipboard.writeText(studentCode).then(() => {
-                const btn = document.getElementById('copyBtn');
-                btn.innerHTML = "✓ KOPYALANDI";
-                btn.style.background = "#2ecc71";
-                btn.style.borderColor = "#2ecc71";
-                btn.style.color = "#10142b";
-                
-                setTimeout(() => {
-                    btn.innerHTML = "📄 KODU KOPYALA";
-                    btn.style.background = "transparent";
-                    btn.style.borderColor = "var(--accent)";
-                    btn.style.color = "var(--accent)";
-                }, 2000);
-            }).catch(err => {
-                console.error('Kopyalama başarısız: ', err);
-                alert("Kopyalama başarısız oldu. Lütfen tekrar deneyin.");
-            });
+                    return response.text(); // Dosya içeriğini metin olarak al
+                })
+                .then(kodMetni => {
+                    // Alınan metni panoya kopyala
+                    return navigator.clipboard.writeText(kodMetni);
+                })
+                .then(() => {
+                    // Başarı durumu
+                    btn.innerHTML = "✓ KOPYALANDI";
+                    btn.style.background = "#2ecc71";
+                    btn.style.borderColor = "#2ecc71";
+                    btn.style.color = "#10142b";
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = "📄 KODU KOPYALA";
+                        btn.style.background = "transparent";
+                        btn.style.borderColor = "var(--accent)";
+                        btn.style.color = "var(--accent)";
+                    }, 2000);
+                })
+                .catch(err => {
+                    // Hata durumu
+                    console.error('Hata: ', err);
+                    btn.innerHTML = "❌ HATA OLUŞTU";
+                    alert("Kod alınamadı! Dosyanın aynı klasörde olduğundan emin olun.");
+                    setTimeout(() => {
+                        btn.innerHTML = "📄 KODU KOPYALA";
+                    }, 2000);
+                });
         }
 
         resizeCanvas();
