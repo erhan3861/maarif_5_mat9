@@ -4,15 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kış Hazırlığı - Döngüler</title>
+    <title>Baret Tasarımı - Desen ve Açı</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --primary: #e67e22;
-            --dark-bg: #2d3436;
-            --accent: #d35400;
+            --primary: #f39c12;
+            --dark-bg: #2c3e50;
+            --accent: #00d2d3;
             --text-light: #ecf0f1;
+            --canvas-bg: #1a252f;
         }
 
         body {
@@ -22,135 +23,228 @@
             background-color: var(--dark-bg);
             color: var(--text-light);
             height: 100vh;
+            max-height: 780px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            background-image: radial-gradient(circle at 50% 10%, #2c3e50 0%, #000 100%);
-            transition: background 1s;
         }
 
         .hud {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            height: 50px;
+            padding: 6px 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(243, 156, 18, 0.2);
+            height: 54px;
+            flex-shrink: 0;
         }
 
         .hud h1 {
             font-family: 'Orbitron';
             margin: 0;
             color: var(--primary);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .hud-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 5px 15px;
-            border-radius: 30px;
+            padding: 4px 12px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             font-family: 'Orbitron';
             text-decoration: none;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
+            justify-content: center;
         }
 
         .hud-btn:hover {
             background: var(--primary);
+            color: #10142b;
             border-color: var(--primary);
         }
 
         .btn-code {
-            border-color: #f1c40f;
-            color: #f1c40f;
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .btn-code:hover {
-            background: #f1c40f;
-            color: #fff;
+            background: var(--accent);
+            color: #10142b;
+            border-color: var(--accent);
         }
 
         .stage {
             flex-grow: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            align-items: center;
+            padding: 5px;
+            position: relative;
         }
 
-        .collection-zone {
-            display: flex;
-            gap: 10px;
-            min-height: 100px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 80%;
-        }
-
-        .collection-zone {
-            display: flex;
-            gap: 10px;
-            min-height: 80px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 80%;
-        }
-
-        .item {
-            font-size: 2.5rem;
-            animation: pop 0.3s;
-        }
-
-        @keyframes pop {
-            from {
-                transform: scale(0);
-            }
-
-            to {
-                transform: scale(1);
-            }
-        }
-
-        .loop-controls {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 20px;
+        .info-panel {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid var(--primary);
+            padding: 5px 15px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.0rem;
+            margin-bottom: 5px;
+            width: 90%;
+            max-width: 600px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
-        input[type="number"] {
-            font-size: 1.2rem;
-            padding: 8px;
-            width: 60px;
-            text-align: center;
+        .lvl-badge {
+            background: var(--primary);
+            color: #10142b;
+            padding: 2px 10px;
             border-radius: 10px;
-            border: none;
+            font-family: 'Orbitron';
+            font-size: 0.75rem;
+            align-self: center;
             font-weight: bold;
         }
 
-        .go-btn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 10px 30px;
-            font-size: 1.2rem;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-family: 'Orbitron';
+        .canvas-container {
+            width: 90%;
+            max-width: 380px;
+            height: 280px;
+            background-color: var(--canvas-bg);
+            border: 2px solid #7f8c8d;
+            border-radius: 15px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
-        .go-btn:hover {
+        .helmet {
+            width: 160px;
+            height: 130px;
+            background: #f1c40f;
+            border-top-left-radius: 80px;
+            border-top-right-radius: 80px;
+            position: absolute;
+            z-index: 1;
+            border: 4px solid #e67e22;
+            box-shadow: inset -10px -10px 20px rgba(0, 0, 0, 0.2);
+            bottom: 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #targetCanvas {
+            z-index: 2;
+            opacity: 0.3;
+        }
+
+        #gameCanvas {
+            z-index: 3;
+        }
+
+        .discovery-bubble {
+            background: rgba(241, 196, 15, 0.15);
+            border: 1px solid rgba(241, 196, 15, 0.4);
+            border-left: 4px solid #f1c40f;
+            padding: 6px 14px;
+            border-radius: 8px;
+            color: #f1c40f;
+            font-size: 0.8rem;
+            font-weight: 600;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            margin-top: 3px;
+            opacity: 0;
+            animation: bubbleFadeIn 0.8s ease forwards;
+        }
+
+        @keyframes bubbleFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .control-panel {
+            width: 90%;
+            max-width: 600px;
+            margin-top: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-sizing: border-box;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .select-box {
+            padding: 6px;
+            font-size: 0.85rem;
+            font-family: 'Fredoka';
+            font-weight: bold;
+            border-radius: 6px;
+            border: 2px solid #7f8c8d;
+            background: #1a252f;
+            color: white;
+            outline: none;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .tool-btn {
             background: var(--accent);
+            border: none;
+            color: #10142b;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            box-shadow: 0 0 15px rgba(0, 210, 211, 0.4);
+            transition: 0.2s;
+            margin-top: 3px;
+        }
+
+        .tool-btn:hover {
+            transform: scale(1.02);
+            background: #00ffff;
         }
 
         .modal {
@@ -164,44 +258,42 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(3px);
         }
 
         .modal-box {
-            background: white;
-            color: #2c3e50;
-            padding: 40px;
-            border-radius: 20px;
+            background: #1a252f;
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 20px;
+            border-radius: 15px;
             max-width: 500px;
+            width: 90%;
             text-align: center;
             position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: #95a5a6;
+            color: #8395a7;
         }
 
-        .progress-dots {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .dot.active {
-            background: var(--primary);
-            transform: scale(1.3);
+        .secret-letter {
+            font-size: 2.5rem;
+            color: #f1c40f;
+            font-family: 'Orbitron';
+            background: rgba(241, 196, 15, 0.1);
+            border: 2px dashed #f1c40f;
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 10px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -209,182 +301,375 @@
 <body>
 
     <div class="hud">
-        <a href="index.html" class="hud-btn">❮ MENÜ</a>
-        <h1>KIŞ HAZIRLIĞI</h1>
-        <div style="display:flex; gap:10px;">
+        <button class="hud-btn" onclick="menuyeDon()">❮ MENÜ</button>
+        <h1>BARET TASARIMI</h1>
+        <div style="display:flex; gap:8px;">
             <button class="hud-btn" onclick="openModal('missionModal')">📜 GÖREV</button>
             <button class="hud-btn btn-code" onclick="openModal('codeModal')">💻 KODLA</button>
         </div>
     </div>
 
     <div class="stage">
-        <div class="progress-dots" id="dots"></div>
-        <div style="color:#bdc3c7; margin-bottom:10px; font-size:1.2rem;" id="lvl-goal"></div>
-        <div class="collection-zone" id="pile">
-            <!-- Items appear here -->
+        <div class="info-panel" id="instruction-panel">
+            <span class="lvl-badge" id="lvl-badge">SEVİYE 1 / 4</span>
+            <div id="instruction-text">Baretteki soluk (beyaz) hedef logoyu oluşturmak için doğru ayarları seç.</div>
         </div>
 
-        <div class="loop-controls">
-            <h3 style="margin-top:0; color:var(--primary);">DÖNGÜ AYARI</h3>
-            <p id="loop-instruction">topla() komutunu kaç kez tekrar edelim?</p>
-            <div>
-                <span style="font-size:1.5rem; font-family:monospace;">TEKRARLA (</span>
-                <input type="number" id="loop-count" value="1" min="1" max="10">
-                <span style="font-size:1.5rem; font-family:monospace;">)</span>
+        <div class="canvas-container">
+            <div class="helmet"></div>
+            <canvas id="targetCanvas"></canvas>
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <div id="discoveryArea"></div>
+
+        <div class="control-panel">
+            <div class="action-row">
+                <select id="selSekil" class="select-box">
+                    <option value="none" selected disabled>1. Şekil Seç</option>
+                    <option value="cizgi">Doğru Parçası (Çizgi)</option>
+                    <option value="cember">Çember</option>
+                </select>
+                <select id="selAci" class="select-box">
+                    <option value="none" selected disabled>2. Dönme Açısı</option>
+                    <option value="90">90° (Dik Açı)</option>
+                    <option value="60">60° (Dar Açı)</option>
+                    <option value="45">45° (Dar Açı)</option>
+                </select>
+                <select id="selTekrar" class="select-box">
+                    <option value="none" selected disabled>3. Tekrar Sayısı</option>
+                    <option value="4">4 Kez</option>
+                    <option value="6">6 Kez</option>
+                    <option value="8">8 Kez</option>
+                </select>
             </div>
-            <button class="go-btn" onclick="runLoop()">ÇALIŞTIR</button>
+            <button class="tool-btn" id="runBtn" onclick="cizimiBaslat()">✨ DESENİ ÇİZ</button>
         </div>
     </div>
 
-    <!-- Modals -->
     <div class="modal" id="missionModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('missionModal')">&times;</span>
-            <h2>GÖREV TALİMATI</h2>
-            <p>Kışa hazırlanmak için kaynak toplaman gerekiyor.</p>
-            <p>Her görevde senden istenen <b>tam sayı kadar</b> döngü kurmalısın. Ne eksik, ne fazla!</p>
+            <h2 style="color:var(--primary); margin-top:0;">GÖREV TALİMATI</h2>
+            <div
+                style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:left; margin-bottom:15px; border-left:4px solid var(--primary);">
+                <h3 style="color:var(--primary); font-size:0.95rem; margin:0 0 5px 0;">Öğrenme Çıktısı (MAT.5.3.1)</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>Kazanım:</b> Geometrik şekilleri (doğru
+                    parçası, çember) ve açıları estetik tasarım çalışmaları (desen/logo) için kullanır.</p>
+            </div>
+            <div
+                style="background:rgba(0, 210, 211, 0.1); padding:15px; border-radius:10px; text-align:left; border-left:4px solid var(--accent);">
+                <h3 style="color:var(--accent); font-size:0.95rem; margin:0 0 5px 0;">Nasıl Oynanır?</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;">Robotun baretinde "beyaz silik" bir hedef çizim
+                    var. Bu deseni ortaya çıkarmak için hangi şeklin, kaç derecelik açılarla, kaç kez döndürüldüğünü
+                    bulmalısın!</p>
+            </div>
         </div>
     </div>
 
     <div class="modal" id="codeModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('codeModal')">&times;</span>
-            <h2>KOD LABORATUVARI</h2>
-            <div
-                style="background:#2d3436; color:#fff; padding:15px; text-align:left; border-radius:5px; font-family:monospace;">
-                for (let i = 0; i < <span style="color:#f1c40f">5</span>; i++) {<br>
-                    &nbsp;&nbsp;topla();<br>
-                    }
+            <h2 style="color:var(--accent); margin-top:0;">KOD LABORATUVARI</h2>
+            <p style="font-size:0.85rem;">"Spirograf" adı verilen bu desen motorunun kodlarını alıp editörde tamamen
+                kendi logolarını tasarlayabilirsin!</p>
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()"
+                    style="padding:10px 15px; font-size:0.8rem; font-weight:bold;">📄 KODU KOPYALA</button>
+                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
+                    style="padding:10px 15px; font-size:0.8rem; background:var(--accent); color:#10142b; font-weight:bold;">💻
+                    EDİTÖRDE DENE</a>
             </div>
-            <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
-                style="display:inline-block; margin-top:10px;">EDİTÖRÜ AÇ</a>
         </div>
     </div>
 
     <div class="modal" id="resultModal">
         <div class="modal-box">
-            <h2 id="res-title"></h2>
-            <p id="res-desc"></p>
-            <button class="hud-btn" id="res-btn"
-                style="display:inline-block; width:200px; justify-content:center;"></button>
+            <div id="res-emoji" style="font-size:3rem; margin-bottom:5px;"></div>
+            <h2 id="res-title" style="color:var(--primary);"></h2>
+            <p id="res-desc" style="font-size:0.9rem; line-height: 1.5;"></p>
+
+            <div id="hint-area"
+                style="display:none; background:rgba(241,196,15,0.1); padding:10px; border-radius:8px; border-left:4px solid #f1c40f; text-align:left; margin:10px 0;">
+                <p id="hint-text" style="font-size:0.8rem; margin:0; color:#f1c40f;"></p>
+            </div>
+
+            <div id="secret-area" style="margin-top:15px; display:none;">
+                <div style="font-size:0.8rem; color:#8395a7; font-weight:bold;">TÜM GÖREVLER BİTTİ! ŞİFRENİN SON HARFİ:
+                </div>
+                <div class="secret-letter">L</div>
+            </div>
+
+            <button class="hud-btn" id="resBtn"
+                style="display:inline-block; margin-top:20px; background:var(--primary); padding:10px 30px; color:#10142b;">İLERLE</button>
         </div>
     </div>
 
     <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const targetCanvas = document.getElementById('targetCanvas');
+        const tCtx = targetCanvas.getContext('2d');
+        const discoveryArea = document.getElementById('discoveryArea');
+
+        const lvlBadge = document.getElementById('lvl-badge');
+        const selSekil = document.getElementById('selSekil');
+        const selAci = document.getElementById('selAci');
+        const selTekrar = document.getElementById('selTekrar');
+        const runBtn = document.getElementById('runBtn');
+        const instText = document.getElementById('instruction-text');
+
         const levels = [
             {
-                goalText: "Hedef: 5 Kütük",
-                target: 5,
-                icon: "🪵",
-                msgSuccess: "Ateş yakıldı! 5 kütük topladın.",
-                color: "#e67e22"
+                name: "Kurtarma Artısı",
+                sekil: "cizgi", aci: 90, tekrar: 4,
+                desc: "Dik (90°) kesişen 4 doğru parçası oluşturmalısın.",
+                hint: "💡 İpucu: Düz çizgiler mi, çemberler mi? Aralarındaki açı kaç derece? Kaç tane var?"
             },
             {
-                goalText: "Hedef: 3 Kovası Su",
-                target: 3,
-                icon: "💧",
-                msgSuccess: "Depo doldu! 3 kova su taşıdın.",
-                color: "#3498db"
+                name: "Radar Gülü",
+                sekil: "cember", aci: 90, tekrar: 4,
+                desc: "Baretin etrafında dik açılarla dönen çemberler...",
+                hint: "💡 İpucu: Bu sefer şekiller yuvarlak! Kaç tane döndürülmüş ve aralarındaki açı ne?"
             },
             {
-                goalText: "Hedef: 4 Taş Blok",
-                target: 4,
-                icon: "🧱",
-                msgSuccess: "Duvar örüldü! 4 taş blok yerleştirdin.",
-                color: "#95a5a6"
+                name: "Pusula Yıldızı",
+                sekil: "cizgi", aci: 45, tekrar: 8,
+                desc: "45 derecelik dar açılarla fırlatılmış 8 ışın hüzmesi.",
+                hint: "💡 İpucu: Çok sayıda çizgi var ve birbirine çok yakın! Açı küçük, tekrar sayısı büyük!"
+            },
+            {
+                name: "Geometri Çiçeği",
+                sekil: "cember", aci: 60, tekrar: 6,
+                desc: "Mükemmel simetri! 60 derecelik dar açılarla dizilmiş 6 çember.",
+                hint: "💡 İpucu: Yuvarlak yapraklar... Ne kadar çiçeksi! Her yaprak arasında 60° var."
             }
         ];
 
         let currentLvl = 0;
+        const offsetBoyut = 60;
+        let denemeCount = 0;
+        let isAnimating = false;
+        let isInitialized = false;
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            targetCanvas.width = canvas.width;
+            targetCanvas.height = canvas.height;
+
+            if (!isInitialized) {
+                isInitialized = true;
+                initLevel();
+            } else {
+                // Resize sonrası sadece hedefi yeniden çiz, state sıfırlama
+                const lvl = levels[currentLvl];
+                drawPattern(tCtx, lvl.sekil, lvl.aci, lvl.tekrar, "#ffffff", true);
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawPattern(context, sekil, aci, tekrar, color, isTarget = false) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.save();
+            context.translate(canvas.width / 2, canvas.height / 2 + 10);
+            context.strokeStyle = color;
+            context.lineWidth = isTarget ? 6 : 4;
+            context.lineCap = "round";
+
+            if (!isTarget) {
+                context.shadowBlur = 15;
+                context.shadowColor = color;
+            }
+
+            let aciRadyan = aci * (Math.PI / 180);
+
+            for (let i = 0; i < tekrar; i++) {
+                context.beginPath();
+                if (sekil === "cizgi") {
+                    context.moveTo(0, 0);
+                    context.lineTo(0, -offsetBoyut - 10);
+                } else if (sekil === "cember") {
+                    context.arc(0, -offsetBoyut / 2, offsetBoyut / 2, 0, Math.PI * 2);
+                }
+                context.stroke();
+                context.rotate(aciRadyan);
+            }
+
+            context.restore();
+        }
+
+        function animatePattern(sekil, aci, tekrar, color, callback) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let currentPart = 0;
+            const aciRadyan = aci * (Math.PI / 180);
+
+            isAnimating = true;
+            runBtn.disabled = true;
+
+            function drawNext() {
+                if (currentPart >= tekrar) {
+                    isAnimating = false;
+                    runBtn.disabled = false;
+                    if (callback) callback();
+                    return;
+                }
+
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2 + 10);
+                ctx.rotate(aciRadyan * currentPart);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 4;
+                ctx.lineCap = "round";
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = color;
+
+                ctx.beginPath();
+                if (sekil === "cizgi") {
+                    ctx.moveTo(0, 0);
+                    ctx.lineTo(0, -offsetBoyut - 10);
+                } else if (sekil === "cember") {
+                    ctx.arc(0, -offsetBoyut / 2, offsetBoyut / 2, 0, Math.PI * 2);
+                }
+                ctx.stroke();
+                ctx.restore();
+
+                currentPart++;
+
+                if (currentPart > 1 && currentPart <= tekrar) {
+                    showDiscovery(`🔄 ${currentPart}. parça çizildi — toplam ${aci * (currentPart - 1)}° döndürüldü`);
+                }
+
+                setTimeout(drawNext, 400);
+            }
+
+            drawNext();
+        }
 
         function initLevel() {
-            if (currentLvl >= levels.length) {
-                showResult(true, "HAZIRLIK TAMAM!", "Kışa hazırsın. Tüm görevleri başardın.", true);
+            selSekil.value = "none"; selAci.value = "none"; selTekrar.value = "none";
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            denemeCount = 0;
+            isAnimating = false;
+            runBtn.disabled = false;
+
+            const lvl = levels[currentLvl];
+            lvlBadge.innerText = `SEVİYE ${currentLvl + 1} / ${levels.length} : ${lvl.name}`;
+            instText.innerText = lvl.desc;
+
+            showDiscovery("🔍 Hedef deseni incele. Hangi şekil? Kaç derecelik dönme? Kaç tekrar?");
+
+            drawPattern(tCtx, lvl.sekil, lvl.aci, lvl.tekrar, "#ffffff", true);
+        }
+
+        function cizimiBaslat() {
+            if (isAnimating) return;
+
+            const valSekil = selSekil.value;
+            const valAci = parseInt(selAci.value);
+            const valTekrar = parseInt(selTekrar.value);
+
+            if (valSekil === "none" || isNaN(valAci) || isNaN(valTekrar)) {
+                showDiscovery("⚠️ Lütfen önce tüm menülerden bir seçim yap!");
                 return;
             }
 
-            const L = levels[currentLvl];
-            document.getElementById('lvl-goal').innerText = L.goalText;
-            document.body.style.backgroundImage = `radial-gradient(circle at 50% 10%, ${L.color} 0%, #000 100%)`;
-            document.getElementById('pile').innerHTML = "";
-            document.querySelector('.hud h1').style.color = L.color;
-            document.getElementById('loop-count').value = 1;
+            denemeCount++;
+            const lvl = levels[currentLvl];
 
-            // Dots
-            const dots = document.getElementById('dots');
-            dots.innerHTML = "";
-            for (let i = 0; i < levels.length; i++) {
-                let d = document.createElement('div');
-                d.className = 'dot' + (i === currentLvl ? ' active' : '');
-                dots.appendChild(d);
-            }
-        }
-
-        function runLoop() {
-            const count = parseInt(document.getElementById('loop-count').value);
-            const pile = document.getElementById('pile');
-            pile.innerHTML = ""; // Reset visual
-            const L = levels[currentLvl];
-
-            // Visual Loop
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i >= count) {
-                    clearInterval(interval);
-                    checkResult(count);
-                    return;
-                }
-                const item = document.createElement('div');
-                item.className = 'item';
-                item.innerText = L.icon;
-                pile.appendChild(item);
-                i++;
-            }, 300);
-        }
-
-        function checkResult(count) {
-            const L = levels[currentLvl];
-            setTimeout(() => {
-                if (count === L.target) {
-                    showResult(true, "BAŞARDIN! ✅", L.msgSuccess);
-                } else if (count < L.target) {
-                    showResult(false, "YETERSİZ ⚠️", `Hedef ${L.target} taneydi, sen ${count} tane topladın.`);
+            animatePattern(valSekil, valAci, valTekrar, "#00d2d3", () => {
+                if (valSekil === lvl.sekil && valAci === lvl.aci && valTekrar === lvl.tekrar) {
+                    if (currentLvl === levels.length - 1) {
+                        // Son seviye — modal göster, postMessage BUTONA tıklayınca gönderilecek
+                        showResult("GEOMETRİ USTASI! 🏆",
+                            `${denemeCount}. denemede bildin! Doğru parçaları, çemberler, açılar ve döngüleri birleştirerek 4 desen oluşturdun.`,
+                            "🎨", true, true);
+                    } else {
+                        showResult("MÜKEMMEL EŞLEŞME! ✨",
+                            `${denemeCount}. denemede bildin! <b>${lvl.name}</b> deseni eşleşti. Şekil: <b>${valSekil === 'cizgi' ? 'Doğru Parçası' : 'Çember'}</b>, Açı: <b>${valAci}°</b>, Tekrar: <b>${valTekrar}</b>`,
+                            "🎯", true, false);
+                    }
                 } else {
-                    showResult(false, "ÇOK FAZLA 🛑", `Hedef ${L.target} taneydi, sen ${count} tane topladın. Enerjini boşa harcama!`);
+                    let hintText = `💡 ${denemeCount}. deneme eşleşmedi. `;
+                    hintText += (valSekil !== lvl.sekil) ? "Şekil türü farklı! " : "Şekil türü doğru ✓ ";
+                    hintText += (valAci !== lvl.aci) ? "Açı değeri farklı! " : "Açı doğru ✓ ";
+                    hintText += (valTekrar !== lvl.tekrar) ? "Tekrar sayısı farklı!" : "Tekrar doğru ✓";
+
+                    showResult("EŞLEŞMEDİ 🤔",
+                        "Seçtiğin ayarlar hedef şekli oluşturmadı. Hedefteki şekli iyi incele.",
+                        "🛠️", false, false, hintText);
                 }
-            }, 500);
+            });
         }
 
-        function showResult(success, title, desc, isFinal = false) {
+        function showResult(title, desc, emoji, isSuccess, isFinal, hintMsg = null) {
+            document.getElementById('res-emoji').innerText = emoji;
             document.getElementById('res-title').innerText = title;
-            document.getElementById('res-title').style.color = success ? "#2ecc71" : "#e74c3c";
-            document.getElementById('res-desc').innerText = desc;
+            document.getElementById('res-title').style.color = isSuccess ? "var(--accent)" : "#e74c3c";
+            document.getElementById('res-desc').innerHTML = desc;
 
-            const btn = document.getElementById('res-btn');
-            if (isFinal) {
-                btn.innerText = "ANA MENÜ";
-                btn.onclick = () => location.href = 'index.html';
-                btn.style.background = "#2ecc71";
-            } else if (success) {
-                btn.innerText = "SONRAKİ";
-                btn.onclick = () => {
-                    closeModal('resultModal');
-                    currentLvl++;
-                    initLevel();
-                };
-                btn.style.background = "#3498db";
+            const hintArea = document.getElementById('hint-area');
+            if (hintMsg) {
+                hintArea.style.display = 'block';
+                document.getElementById('hint-text').innerText = hintMsg;
             } else {
+                hintArea.style.display = 'none';
+            }
+
+            const btn = document.getElementById('resBtn');
+
+            if (isFinal) {
+                document.getElementById('secret-area').style.display = "block";
+                btn.innerText = "ANA MENÜYE DÖN";
+                btn.onclick = () => {
+                    // Önce şifre harfini gönder, sonra menüye dön
+                    window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 6, harf: 'L' }, '*');
+                    setTimeout(() => {
+                        window.parent.postMessage({ tip: 'MENUYE_DON' }, '*');
+                    }, 300);
+                };
+                btn.style.background = "var(--primary)";
+            } else if (isSuccess) {
+                document.getElementById('secret-area').style.display = "none";
+                btn.innerText = "SONRAKİ DESEN";
+                btn.onclick = () => { closeModal('resultModal'); currentLvl++; initLevel(); };
+                btn.style.background = "var(--accent)";
+            } else {
+                document.getElementById('secret-area').style.display = "none";
                 btn.innerText = "TEKRAR DENE";
-                btn.onclick = () => closeModal('resultModal');
+                btn.onclick = () => { closeModal('resultModal'); ctx.clearRect(0, 0, canvas.width, canvas.height); };
                 btn.style.background = "#e74c3c";
             }
+
             openModal('resultModal');
+        }
+
+        function showDiscovery(text) {
+            discoveryArea.innerHTML = `<div class="discovery-bubble">${text}</div>`;
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        initLevel();
+        function menuyeDon() {
+            if (isAnimating) return;
+            window.parent.postMessage({ tip: 'MENUYE_DON' }, '*');
+        }
+
+        function copyStudentCode() {
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = "⌛ BEKLEYİN...";
+            fetch('ogrenci_kodu6.txt')
+                .then(response => { if (!response.ok) throw new Error("Dosya!"); return response.text(); })
+                .then(kodMetni => navigator.clipboard.writeText(kodMetni))
+                .then(() => {
+                    btn.innerHTML = "✓ KOPYALANDI"; btn.style.background = "var(--accent)"; btn.style.color = "#10142b";
+                    setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; btn.style.background = "transparent"; btn.style.color = "var(--accent)"; }, 2000);
+                })
+                .catch(err => { alert("Kod alınamadı! ogrenci_kodu6.txt dosyasını kontrol edin."); btn.innerHTML = "📄 KODU KOPYALA"; });
+        }
+
+        setTimeout(resizeCanvas, 100);
     </script>
 </body>
 

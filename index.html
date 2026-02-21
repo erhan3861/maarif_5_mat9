@@ -1,114 +1,262 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robot Macerası - Geometri Gezegeni</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <title>Robot Macerası - Konsol</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #00d2d3;
             --dark-bg: #10142b;
             --accent: #ff9f43;
             --card-bg: rgba(255, 255, 255, 0.05);
-            --text-light: #c8d6e5;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            margin: 0; padding: 0; font-family: 'Fredoka', sans-serif;
-            background-color: var(--dark-bg); color: var(--text-light);
-            height: 100vh; max-height: 615px; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background-image: radial-gradient(circle at 15% 50%, rgba(0, 210, 211, 0.1) 0%, transparent 30%),
-                              radial-gradient(circle at 85% 30%, rgba(255, 159, 67, 0.1) 0%, transparent 30%);
+            margin: 0;
+            padding: 0;
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--dark-bg);
+            color: #fff;
+            height: 100vh;
+            max-height: 780px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        header { text-align: center; margin-bottom: 5px; z-index: 10; }
-        h1 { font-family: 'Orbitron', sans-serif; margin: 0; color: var(--primary); font-size: 1.5rem; }
-        .sub-title { color: var(--accent); margin-top: 2px; font-size: 0.85rem; font-weight: 600; }
+        #menu-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 210, 211, 0.15);
+        }
+
+        h1 {
+            font-family: 'Orbitron';
+            color: var(--primary);
+            margin: 0 0 8px 0;
+            font-size: 2.15rem;
+            text-shadow: 0 0 20px rgba(0, 210, 211, 0.5);
+            letter-spacing: 1px;
+        }
 
         .games-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-            width: 95%; max-width: 900px; z-index: 10; margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 95%;
+            max-width: 850px;
+            margin-bottom: 15px;
         }
 
         .game-card {
-            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; padding: 10px; text-align: center;
-            transition: all 0.2s ease-in-out; cursor: pointer; backdrop-filter: blur(5px);
-            display: flex; flex-direction: column; justify-content: space-between; height: 125px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 168px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
         }
-        .game-card:hover { transform: translateY(-5px); border-color: var(--primary); background: rgba(0, 210, 211, 0.1); }
-        .game-icon { font-size: 2rem; margin-bottom: 5px; transition: 0.3s; }
-        .game-card:hover .game-icon { transform: scale(1.1); }
-        .game-title { font-family: 'Orbitron', sans-serif; font-size: 0.95rem; color: #fff; margin-bottom: 3px; }
-        .game-desc { font-size: 0.75rem; color: #8395a7; line-height: 1.2; }
-        .play-btn {
-            background: transparent; border: 1px solid var(--primary); color: var(--primary);
-            padding: 4px 15px; border-radius: 15px; font-family: 'Orbitron', sans-serif;
-            font-size: 0.75rem; font-weight: bold; margin-top: 8px; transition: 0.3s;
-        }
-        .game-card:hover .play-btn { background: var(--primary); color: var(--dark-bg); }
 
-        /* YENİ: ŞİFRE ÇÖZÜCÜ PANELİ */
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .game-card:hover::before {
+            left: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            background: rgba(0, 210, 211, 0.1);
+            box-shadow: 0 5px 20px rgba(0, 210, 211, 0.2);
+        }
+
+        .game-icon {
+            font-size: 2.6rem;
+            margin-bottom: 5px;
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.2);
+        }
+
+        .game-title {
+            font-family: 'Orbitron';
+            font-size: 1.05rem;
+            color: #fff;
+        }
+
+        .game-desc {
+            font-size: 0.85rem;
+            color: #8395a7;
+        }
+
+        .game-card.completed {
+            border-color: #2ecc71;
+        }
+
+        .game-card.completed::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            color: #2ecc71;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
         .password-panel {
-            background: rgba(0,0,0,0.5); border: 1px solid var(--accent);
-            border-radius: 10px; padding: 10px 20px; text-align: center;
-            display: flex; align-items: center; gap: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--accent);
+            padding: 10px 24px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: panelPulse 3s ease-in-out infinite;
         }
-        .pw-title { font-family: 'Orbitron'; color: var(--accent); font-size: 0.9rem; margin: 0; }
-        .letters { display: flex; gap: 8px; }
+
+        @keyframes panelPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(255, 159, 67, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(255, 159, 67, 0.4);
+            }
+        }
+
         .letter-box {
-            width: 30px; height: 30px; background: #1e2749; border: 2px solid #34495e;
-            border-radius: 5px; display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; font-weight: bold; color: white; font-family: 'Orbitron';
+            width: 38px;
+            height: 38px;
+            background: #1e2749;
+            border: 2px solid #34495e;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            font-family: 'Orbitron';
+            transition: all 0.5s ease;
         }
-        .letter-box.found { background: var(--primary); border-color: #fff; color: #10142b; box-shadow: 0 0 10px var(--primary); }
+
+        .letter-box.active {
+            background: var(--primary);
+            color: #10142b;
+            border-color: #fff;
+            box-shadow: 0 0 15px var(--primary);
+            transform: scale(1.1);
+        }
+
+        @keyframes letterReveal {
+            0% {
+                transform: scale(0.5) rotateY(180deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1.1) rotateY(0deg);
+                opacity: 1;
+            }
+        }
+
+        .letter-box.reveal {
+            animation: letterReveal 0.6s ease forwards;
+        }
+
+        #game-view {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #game-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
     </style>
 </head>
+
 <body>
-
-    <header>
-        <h1>ROBOT MACERASI</h1>
-        <div class="sub-title">3. TEMA: GEOMETRİK ŞEKİLLERİ KEŞFET</div>
-    </header>
-
-    <div class="games-grid">
-        <div class="game-card" onclick="location.href='oyun1.html'">
-            <div class="game-icon">🌉</div>
-            <div><div class="game-title">KÖPRÜ İNŞASI</div><div class="game-desc">Doğru Parçası</div></div>
-            <button class="play-btn">BAŞLAT</button>
+    <div id="menu-view">
+        <header>
+            <h1>3.TEMA: GEOMETRİK ŞEKİLLER</h1>
+            <p style="font-size: 0.9rem; color: var(--accent); margin: 8px 0 0 0; line-height: 1.4; max-width: 600px;">
+                MAT.5.3.1. Temel geometrik çizimler için
+                matematiksel araç ve teknolojiden yararlanabilme</p>
+        </header>
+        <div class="games-grid">
+            <div class="game-card" id="card1" onclick="oyunuBaslat('oyun1.html')">
+                <div class="game-icon">🌉</div>
+                <div class="game-title">KÖPRÜ İNŞASI</div>
+                <div class="game-desc">Doğru Parçası</div>
+            </div>
+            <div class="game-card" id="card2" onclick="oyunuBaslat('oyun2.html')">
+                <div class="game-icon">☄️</div>
+                <div class="game-title">LAZER SAVUNMASI</div>
+                <div class="game-desc">Işın ve Doğru</div>
+            </div>
+            <div class="game-card" id="card3" onclick="oyunuBaslat('oyun3.html')">
+                <div class="game-icon">☀️</div>
+                <div class="game-title">GÜNEŞ PANELİ</div>
+                <div class="game-desc">Açı Keşfi</div>
+            </div>
+            <div class="game-card" id="card4" onclick="oyunuBaslat('oyun4.html')">
+                <div class="game-icon">📡</div>
+                <div class="game-title">RADAR AYARI</div>
+                <div class="game-desc">Çember ve Pergel</div>
+            </div>
+            <div class="game-card" id="card5" onclick="oyunuBaslat('oyun5.html')">
+                <div class="game-icon">📐</div>
+                <div class="game-title">GÜVENLİ ROTA</div>
+                <div class="game-desc">Dikme (Gönye)</div>
+            </div>
+            <div class="game-card" id="card6" onclick="oyunuBaslat('oyun6.html')">
+                <div class="game-icon">⚙️</div>
+                <div class="game-title">BARET TASARIMI</div>
+                <div class="game-desc">Çokgen Tasarımı</div>
+            </div>
         </div>
-        <div class="game-card" onclick="location.href='oyun2.html'">
-            <div class="game-icon">☄️</div>
-            <div><div class="game-title">LAZER SAVUNMASI</div><div class="game-desc">Işın ve Doğru</div></div>
-            <button class="play-btn">BAŞLAT</button>
-        </div>
-        <div class="game-card" onclick="location.href='oyun3.html'">
-            <div class="game-icon">☀️</div>
-            <div><div class="game-title">GÜNEŞ PANELİ</div><div class="game-desc">Açı Keşfi</div></div>
-            <button class="play-btn">BAŞLAT</button>
-        </div>
-        <div class="game-card" onclick="location.href='oyun4.html'">
-            <div class="game-icon">📡</div>
-            <div><div class="game-title">RADAR AYARI</div><div class="game-desc">Çember ve Pergel</div></div>
-            <button class="play-btn">BAŞLAT</button>
-        </div>
-        <div class="game-card" onclick="location.href='oyun5.html'">
-            <div class="game-icon">📐</div>
-            <div><div class="game-title">GÜVENLİ ROTA</div><div class="game-desc">Dikme (Gönye)</div></div>
-            <button class="play-btn">BAŞLAT</button>
-        </div>
-        <div class="game-card" onclick="location.href='oyun6.html'">
-            <div class="game-icon">⚙️</div>
-            <div><div class="game-title">BARET TASARIMI</div><div class="game-desc">Çokgenler</div></div>
-            <button class="play-btn">BAŞLAT</button>
-        </div>
-    </div>
-
-    <div class="password-panel">
-        <h3 class="pw-title">GİZLİ ŞİFRE:</h3>
-        <div class="letters" id="password-boxes">
+        <div class="password-panel">
+            <span style="font-family:'Orbitron'; font-size:0.9rem; color:var(--accent);">GİZLİ ŞİFRE:</span>
             <div class="letter-box" id="l1">?</div>
             <div class="letter-box" id="l2">?</div>
             <div class="letter-box" id="l3">?</div>
@@ -117,19 +265,43 @@
             <div class="letter-box" id="l6">?</div>
         </div>
     </div>
-
+    <div id="game-view"><iframe id="game-frame" src=""></iframe></div>
     <script>
-        // Kaydedilen harfleri yükle
-        window.onload = function() {
-            for(let i=1; i<=6; i++) {
-                let letter = localStorage.getItem('sifre_' + i);
-                if(letter) {
-                    let box = document.getElementById('l' + i);
-                    box.innerText = letter;
-                    box.classList.add('found');
-                }
-            }
+        // Şifre sadece bellekte — postMessage ile güncellenir
+        let sifreHafizasi = ["?", "?", "?", "?", "?", "?"];
+
+        function oyunuBaslat(url) {
+            document.getElementById('menu-view').style.display = 'none';
+            document.getElementById('game-view').style.display = 'block';
+            document.getElementById('game-frame').src = url;
         }
+
+        function menuyeDon() {
+            document.getElementById('menu-view').style.display = 'flex';
+            document.getElementById('game-view').style.display = 'none';
+            document.getElementById('game-frame').src = "";
+        }
+
+        window.addEventListener('message', function (event) {
+            if (!event.data || !event.data.tip) return;
+
+            if (event.data.tip === 'GOREV_TAMAM') {
+                const id = event.data.id;
+                const harf = event.data.harf;
+                sifreHafizasi[id - 1] = harf;
+
+                const box = document.getElementById('l' + id);
+                if (box) {
+                    box.innerText = harf;
+                    box.classList.add('active', 'reveal');
+                }
+
+                const card = document.getElementById('card' + id);
+                if (card) card.classList.add('completed');
+            }
+            if (event.data.tip === 'MENUYE_DON') { menuyeDon(); }
+        });
     </script>
 </body>
+
 </html>

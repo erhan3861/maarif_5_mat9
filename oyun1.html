@@ -1,125 +1,329 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Köprü İnşası - Noktadan Doğru Parçasına</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <title>Köprü İnşası - Doğru Parçası</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #00d2d3;
-            --dark-bg: #10142b;
+            --dark-bg: #0a1628;
             --accent: #ff9f43;
             --text-light: #c8d6e5;
-            --canvas-bg: #1e2749;
+            --canvas-bg: #0f1d36;
         }
 
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: 'Fredoka', sans-serif;
-            background-color: var(--dark-bg); color: var(--text-light);
-            height: 100vh; max-height: 615px; overflow: hidden;
-            display: flex; flex-direction: column;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            height: 100vh;
+            max-height: 780px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* HUD */
         .hud {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 5px 20px; background: rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid rgba(0, 210, 211, 0.2); height: 45px; flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(0, 210, 211, 0.2);
+            height: 54px;
+            flex-shrink: 0;
         }
-        .hud h1 { font-family: 'Orbitron'; margin: 0; color: var(--primary); font-size: 1.1rem; }
-        .hud-btn {
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white; padding: 4px 12px; border-radius: 20px;
-            cursor: pointer; transition: 0.2s; font-family: 'Orbitron';
-            text-decoration: none; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
-        }
-        .hud-btn:hover { background: var(--primary); color: var(--dark-bg); border-color: var(--primary); }
-        .btn-code { border-color: var(--accent); color: var(--accent); }
-        .btn-code:hover { background: var(--accent); color: #10142b; border-color: var(--accent); }
 
-        /* Oyun Alanı */
+        .hud h1 {
+            font-family: 'Orbitron';
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .hud-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Orbitron';
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hud-btn:hover {
+            background: var(--primary);
+            color: #10142b;
+            border-color: var(--primary);
+        }
+
+        .btn-code {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-code:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
         .stage {
-            flex-grow: 1; display: flex; flex-direction: column;
-            align-items: center; padding: 10px; position: relative;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            position: relative;
         }
 
         .info-panel {
-            background: rgba(255, 159, 67, 0.1); border: 1px solid var(--accent);
-            padding: 10px 15px; border-radius: 8px; color: var(--accent);
-            font-weight: 600; font-size: 0.9rem; margin-bottom: 10px;
-            width: 90%; max-width: 600px; text-align: center;
+            background: rgba(0, 210, 211, 0.1);
+            border: 1px solid var(--primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 1.0rem;
+            margin-bottom: 8px;
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
         }
 
-        /* Etkileşimli Tuval */
         .canvas-container {
-            width: 90%; max-width: 600px; height: 280px;
+            width: 90%;
+            max-width: 700px;
+            height: 310px;
             background-color: var(--canvas-bg);
-            background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 20px 20px;
-            border: 2px solid #34495e; border-radius: 12px;
-            position: relative; cursor: crosshair;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            border: 2px solid rgba(0, 210, 211, 0.3);
+            border-radius: 12px;
+            position: relative;
+            cursor: crosshair;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
-        canvas { width: 100%; height: 100%; border-radius: 10px; }
 
-        /* Kontrol Paneli */
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        /* Keşif Balonu */
+        .discovery-bubble {
+            background: rgba(241, 196, 15, 0.15);
+            border: 1px solid rgba(241, 196, 15, 0.4);
+            border-left: 4px solid #f1c40f;
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: #f1c40f;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+            margin-top: 5px;
+            opacity: 0;
+            animation: bubbleFadeIn 0.8s ease forwards;
+        }
+
+        @keyframes bubbleFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .control-panel {
-            width: 90%; max-width: 600px; margin-top: 15px;
-            background: rgba(255, 255, 255, 0.05); padding: 15px;
-            border-radius: 12px; display: flex; flex-direction: column; gap: 10px;
+            width: 90%;
+            max-width: 700px;
+            margin-top: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
             box-sizing: border-box;
         }
 
-        .action-row { display: flex; justify-content: space-between; align-items: center; }
-        
+        .action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .tool-btn {
-            background: #2c3e50; border: none; color: white;
-            padding: 8px 15px; border-radius: 8px; font-family: 'Orbitron';
-            font-size: 0.85rem; cursor: not-allowed; opacity: 0.5; transition: 0.3s;
+            background: #2c3e50;
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            font-size: 0.8rem;
+            cursor: not-allowed;
+            opacity: 0.5;
+            transition: 0.3s;
         }
+
         .tool-btn.active {
-            background: var(--primary); color: var(--dark-bg);
-            cursor: pointer; opacity: 1; box-shadow: 0 0 10px var(--primary);
+            background: var(--primary);
+            color: var(--dark-bg);
+            cursor: pointer;
+            opacity: 1;
+            box-shadow: 0 0 10px var(--primary);
         }
 
-        /* Slider */
-        .slider-container { display: none; flex-direction: column; gap: 5px; width: 100%; }
-        .slider-container label { font-size: 0.8rem; color: #bdc3c7; font-weight: bold; }
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        .slider-container {
+            display: none;
+            flex-direction: column;
+            gap: 3px;
+            width: 100%;
+        }
+
+        .slider-container label {
+            font-size: 0.75rem;
+            color: #bdc3c7;
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 20px; width: 20px;
-            border-radius: 50%; background: var(--accent); cursor: pointer;
-            margin-top: -8px; box-shadow: 0 0 10px var(--accent);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; cursor: pointer; background: #34495e; border-radius: 2px;
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            margin-top: -7px;
+            box-shadow: 0 0 10px var(--accent);
         }
 
-        /* Modallar */
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #34495e;
+            border-radius: 2px;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2c3e50;
+            transition: 0.3s;
+        }
+
+        .dot.done {
+            background: #2ecc71;
+        }
+
+        .dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Modal */
         .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); display: none; justify-content: center;
-            align-items: center; z-index: 100; backdrop-filter: blur(3px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(3px);
         }
+
         .modal-box {
-            background: var(--dark-bg); border: 1px solid var(--primary);
-            color: var(--text-light); padding: 20px; border-radius: 15px;
-            max-width: 450px; width: 85%; text-align: center; position: relative;
+            background: var(--dark-bg);
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #8395a7; }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #8395a7;
+        }
+
         .res-btn {
-            margin-top: 15px; background: var(--primary); border: none; padding: 8px 30px;
-            color: var(--dark-bg); font-family: 'Orbitron'; font-size: 0.9rem; border-radius: 20px; cursor: pointer;
+            margin-top: 15px;
+            background: var(--primary);
+            border: none;
+            padding: 8px 30px;
+            color: var(--dark-bg);
+            font-family: 'Orbitron';
+            font-size: 0.9rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .secret-letter {
+            font-size: 2rem;
+            color: #f1c40f;
+            font-family: 'Orbitron';
+            background: rgba(241, 196, 15, 0.1);
+            border: 2px dashed #f1c40f;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
         }
     </style>
 </head>
+
 <body>
 
     <div class="hud">
-        <a href="index.html" class="hud-btn">❮ MENÜ</a>
-        <h1>DOĞRU PARÇASI LABORATUVARI</h1>
+        <button class="hud-btn" onclick="menuyeDon()">❮ MENÜ</button>
+        <h1>KÖPRÜ İNŞASI</h1>
         <div style="display:flex; gap:8px;">
             <button class="hud-btn" onclick="openModal('missionModal')">📜 GÖREV</button>
             <button class="hud-btn btn-code" onclick="openModal('codeModal')">💻 KODLA</button>
@@ -128,62 +332,92 @@
 
     <div class="stage">
         <div class="info-panel" id="instruction">
-            🤖 Uzay haritasında (ızgarada) başlangıç için bir <b>A Noktası</b> işaretle.
+            🤖 <b>1. Adım:</b> Haritada başlangıç için bir <b>A Noktası</b> işaretle.
         </div>
 
         <div class="canvas-container">
             <canvas id="gameCanvas"></canvas>
         </div>
 
+        <div id="discoveryArea"></div>
+
         <div class="control-panel">
             <div class="action-row">
-                <div style="font-size:0.85rem; color:#8395a7;">Durum: <span id="status-text" style="color:#fff; font-weight:bold;">Noktalar Bekleniyor</span></div>
+                <div style="font-size:0.8rem; color:#8395a7;">Durum: <span id="status-text"
+                        style="color:#fff; font-weight:bold;">Noktalar Bekleniyor</span></div>
                 <button class="tool-btn" id="rulerBtn" onclick="activateRuler()">📐 ÇİZGEÇ KULLAN</button>
             </div>
-            
             <div class="slider-container" id="densityControl">
-                <label>Lazer Yoğunluğu (Araya Noktalar Ekle)</label>
-                <input type="range" id="densitySlider" min="0" max="100" value="0" oninput="drawCanvas()">
+                <label>Lazer Yoğunluğu (Araya Noktalar Ekle): <span id="densityValue"
+                        style="color:var(--accent);">0%</span></label>
+                <input type="range" id="densitySlider" min="0" max="100" value="0" oninput="onSliderChange()">
             </div>
+        </div>
+
+        <div class="progress-dots">
+            <div class="dot active" id="dot0"></div>
+            <div class="dot" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
         </div>
     </div>
 
     <div class="modal" id="missionModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('missionModal')">&times;</span>
-            <h2 style="color:var(--primary); margin-top:0;">GÖREV TALİMATI</h2>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:left; margin-bottom:15px; border-left:4px solid var(--primary);">
-                <h3 style="color:var(--primary); font-size:0.95rem; margin:0 0 5px 0;">Öğrenme Çıktısı (MAT.5.3.1)</h3>
-                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>Kazanım:</b> Temel geometrik çizimler için matematiksel araç ve teknolojiden yararlanabilme.</p>
+            <h2 style="color:var(--primary); margin-top:0; font-size: 1.2rem;">GÖREV TALİMATI</h2>
+            <div
+                style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; text-align:left; margin-bottom:10px; border-left:4px solid var(--primary);">
+                <p style="font-size:0.8rem; margin:0; color:#bdc3c7;"><b>Kazanım (MAT.5.3.1):</b> Temel geometrik
+                    çizimler için matematiksel araçlardan yararlanır.</p>
             </div>
-
-            <div style="background:rgba(255,159,67,0.1); padding:15px; border-radius:10px; text-align:left; border-left:4px solid var(--accent);">
-                <h3 style="color:var(--accent); font-size:0.95rem; margin:0 0 5px 0;">Bu Alıştırmanın Sana Faydası</h3>
-                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;">"Doğru parçası"nın sadece basit bir çizgi olmadığını; iki nokta arasına aynı hizada dizilmiş <b>sayısız noktanın birleşimi</b> olduğunu kendi ellerinle inşa ederek kavrarsın. Çizgeç (ölçüsüz cetvel) kullanım mantığını dijital ortamda keşfedersin.</p>
-            </div>
+            <p style="font-size:0.85rem; line-height:1.4;">Doğru parçası, iki nokta arasına aynı hizada dizilmiş
+                <b>sayısız noktanın birleşimi</b>dir. Çizgeci kullanarak bu noktaları birleştir ve köprüyü kur!
+            </p>
         </div>
     </div>
 
     <div class="modal" id="codeModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('codeModal')">&times;</span>
-            <h2 style="color:var(--accent); margin-top:0;">KOD LABORATUVARI</h2>
-            <p style="font-size:0.85rem;">Editörde kendi doğru parçanı kodlamak ister misin? "Kodu Kopyala" butonuna bas ve kod editörüne yapıştırarak denemeler yap!</p>
-            
-            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
-                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()" style="padding:10px 15px; font-size:0.8rem; font-weight:bold;">📄 KODU KOPYALA</button>
-                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code" style="padding:10px 15px; font-size:0.8rem; background:var(--accent); color:#10142b; font-weight:bold;">💻 EDİTÖRDE DENE</a>
+            <h2 style="color:var(--accent); margin-top:0; font-size: 1.2rem;">KOD LABORATUVARI</h2>
+            <p style="font-size:0.8rem;">Bu tasarımı kodlamak için "Kodu Kopyala" butonuna bas ve Talent14 editörüne
+                yapıştır!</p>
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:15px;">
+                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()"
+                    style="padding:10px 15px; font-weight:bold;">📄 KODU KOPYALA</button>
+                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
+                    style="padding:10px 15px; background:var(--accent); color:#10142b; font-weight:bold;">💻 EDİTÖRDE
+                    DENE</a>
             </div>
         </div>
     </div>
 
     <div class="modal" id="resultModal">
         <div class="modal-box">
-            <div style="font-size:3rem; margin-bottom:5px;">🌌</div>
-            <h2 style="color:var(--primary);">SİSTEM TAMAMLANDI!</h2>
-            <p style="font-size:0.9rem;">Tebrikler! Yan yana dizilmiş sonsuz noktanın birleşerek bir <b>Doğru Parçası</b> oluşturduğunu uygulamalı olarak keşfettin.</p>
-            <button class="res-btn" onclick="location.href='index.html'">MENÜYE DÖN</button>
+            <div style="font-size:3rem; margin-bottom:5px;">🌉</div>
+            <h2 style="color:var(--primary); font-size: 1.2rem;">KÖPRÜ AKTİF!</h2>
+            <p style="font-size:0.85rem; line-height:1.5;">İki nokta arasına sayısız nokta ekleyerek <b>DOĞRU
+                    PARÇASI</b> oluşturdun!</p>
+
+            <div
+                style="background:rgba(0,210,211,0.1); padding:10px; border-radius:8px; border-left:4px solid var(--primary); text-align:left; margin:10px 0;">
+                <p style="font-size:0.8rem; margin:0; color:#bdc3c7;">📌 <b>Doğru Parçası:</b> Başlangıcı (A) ve bitişi
+                    (B) belli olan, iki nokta arasındaki sonsuz noktanın birleşimi!</p>
+            </div>
+
+            <div
+                style="background:rgba(241,196,15,0.1); padding:10px; border-radius:8px; border-left:4px solid #f1c40f; text-align:left; margin:10px 0;">
+                <p style="font-size:0.8rem; margin:0; color:#f1c40f;">💡 <b>Bunu Biliyor Muydun?</b> Bir doğru parçası
+                    üzerinde sonsuz sayıda nokta vardır. Sen slider ile bunların bir kısmını görünür yaptın!</p>
+            </div>
+
+            <div style="margin-top:10px;">
+                <div style="font-size:0.8rem; color:#8395a7;">GİZLİ ŞİFRE HARFİNİ BULDUN!</div>
+                <div class="secret-letter">P</div>
+            </div>
+            <br>
+            <!-- <button class="res-btn" onclick="gorevTamamDon()">MENÜYE DÖN</button> -->
         </div>
     </div>
 
@@ -195,6 +429,8 @@
         const rulerBtn = document.getElementById('rulerBtn');
         const densityControl = document.getElementById('densityControl');
         const slider = document.getElementById('densitySlider');
+        const densityValue = document.getElementById('densityValue');
+        const discoveryArea = document.getElementById('discoveryArea');
 
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
@@ -203,32 +439,31 @@
         }
         window.addEventListener('resize', resizeCanvas);
 
-        let state = 0; 
-        let ptA = null;
-        let ptB = null;
-        let rulerActive = false;
-        let isSuccessShown = false;
+        let state = 0;
+        let ptA = null, ptB = null;
+        let rulerActive = false, isSuccessShown = false;
+        let lastMilestone = 0; // Son gösterilen keşif balonu yüzdesi
 
-        canvas.addEventListener('mousedown', function(e) {
+        canvas.addEventListener('mousedown', function (e) {
             const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
             if (state === 0) {
-                ptA = {x, y};
+                ptA = { x, y };
                 state = 1;
-                instText.innerHTML = "🤖 A Noktası kaydedildi. Şimdi bitiş için <b>B Noktasını</b> işaretle.";
+                setDot(0, 'done'); setDot(1, 'active');
+                instText.innerHTML = "🤖 <b>2. Adım:</b> A Noktası kaydedildi! Bitiş için <b>B Noktasını</b> işaretle.";
+                showDiscovery("💡 Bu bir BAŞLANGIÇ noktası. Her doğru parçası bir A noktasından başlar!");
                 drawCanvas();
-            } 
+            }
             else if (state === 1) {
-                const dist = Math.hypot(x - ptA.x, y - ptA.y);
-                if(dist < 50) {
-                    instText.innerHTML = "⚠️ Kraterler çok yakın! B noktasını biraz daha uzağa seç.";
-                    return;
-                }
-                ptB = {x, y};
+                if (Math.hypot(x - ptA.x, y - ptA.y) < 50) return;
+                ptB = { x, y };
                 state = 2;
-                instText.innerHTML = "🤖 İki nokta da hazır! Aşağıdan <b>ÇİZGEÇ KULLAN</b> butonuna tıkla.";
+                setDot(1, 'done'); setDot(2, 'active');
+                instText.innerHTML = "🤖 <b>3. Adım:</b> İki noktan hazır! <b>ÇİZGEÇ KULLAN</b> butonuna tıkla.";
+                showDiscovery("💡 Şimdi iki noktamız var: A ve B. Bu iki nokta arasında kaç tane nokta sığar dersin?");
                 statusText.innerText = "Hizalama Bekleniyor";
                 rulerBtn.classList.add('active');
                 drawCanvas();
@@ -239,25 +474,73 @@
             if (state === 2) {
                 rulerActive = true;
                 state = 3;
+                setDot(2, 'done'); setDot(3, 'active');
                 rulerBtn.style.display = 'none';
                 densityControl.style.display = 'flex';
                 statusText.innerText = "Lazer Bağlantısı";
-                instText.innerHTML = "🤖 Çizgeç yerleşti! Şimdi <b>Lazer Yoğunluğu</b> kaydırıcısını (slider) yavaşça sağa çek.";
+                instText.innerHTML = "🤖 <b>4. Adım:</b> Çizgeç yerleşti! <b>Slider'ı yavaşça sağa çek</b> ve noktaların belirmesini izle.";
+                showDiscovery("💡 Slider'ı çekerken aradaki noktaları izle. Sonsuz sayıda nokta birleşerek DOĞRU PARÇASI oluşturur!");
                 drawCanvas();
             }
         }
 
-        function drawCanvas() {
+        function onSliderChange() {
+            const density = parseInt(slider.value);
+            densityValue.innerText = density + '%';
+            drawCanvas();
+
+            // Kademeli keşif balonları
+            if (density >= 25 && lastMilestone < 25) {
+                lastMilestone = 25;
+                showDiscovery("🔍 Noktalar belirmeye başladı! A ile B arasında küçük noktalar oluşuyor...");
+                instText.innerHTML = "📏 %25 — <b>Aradaki noktalar</b> yavaş yavaş beliriyor. Çekmeye devam et!";
+            }
+            else if (density >= 50 && lastMilestone < 50) {
+                lastMilestone = 50;
+                showDiscovery("🔍 Noktalar arasındaki boşluklar azalıyor! Daha da sıkılaşıyorlar...");
+                instText.innerHTML = "📏 %50 — Noktalar <b>sıkılaşıyor</b>. Birleşmeye yaklaşıyorlar!";
+            }
+            else if (density >= 75 && lastMilestone < 75) {
+                lastMilestone = 75;
+                showDiscovery("🔍 Neredeyse birleşti! Biraz daha sıkıştır ve çizgiyi tamamla!");
+                instText.innerHTML = "📏 %75 — Neredeyse bir <b>çizgi gibi</b> görünüyor! Son hamle!";
+            }
+            else if (density === 100 && !isSuccessShown) {
+                isSuccessShown = true;
+                lastMilestone = 100;
+                showDiscovery("🎯 İşte DOĞRU PARÇASI! Sonsuz noktanın birleşiminden oluşan A-B arası çizgi!");
+                instText.innerHTML = "✅ <b>DOĞRU PARÇASI</b> tamamlandı! Köprü inşa edildi!";
+                setDot(3, 'done');
+
+                // Parlama animasyonu
+                flashBridge(() => {
+                    setTimeout(() => openModal('resultModal'), 800);
+                });
+            }
+        }
+
+        function flashBridge(callback) {
+            let flashes = 0;
+            const interval = setInterval(() => {
+                flashes++;
+                drawCanvas(flashes % 2 === 0);
+                if (flashes >= 6) {
+                    clearInterval(interval);
+                    drawCanvas(true);
+                    callback();
+                }
+            }, 200);
+        }
+
+        function drawCanvas(glow = false) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             if (rulerActive && ptA && ptB) {
                 ctx.save();
                 const angle = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
                 const dist = Math.hypot(ptB.x - ptA.x, ptB.y - ptA.y);
-                
                 ctx.translate(ptA.x, ptA.y);
                 ctx.rotate(angle);
-                
                 ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
                 ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
                 ctx.lineWidth = 2;
@@ -265,43 +548,48 @@
                 ctx.rect(0, 10, dist, 40);
                 ctx.fill();
                 ctx.stroke();
-                
-                for(let i=10; i<dist; i+=20) {
-                    ctx.beginPath(); ctx.moveTo(i, 10); ctx.lineTo(i, 20); ctx.stroke();
-                }
                 ctx.restore();
             }
 
             if (state === 3) {
-                const density = parseInt(slider.value); 
-                
-                if(density > 0) {
+                const density = parseInt(slider.value);
+                if (density > 0) {
                     const dist = Math.hypot(ptB.x - ptA.x, ptB.y - ptA.y);
-                    const numDots = Math.floor((density / 100) * (dist / 2)); 
-                    
-                    ctx.fillStyle = "var(--primary)";
+                    const numDots = Math.floor((density / 100) * (dist / 2));
+
+                    // Glow efekti
+                    if (glow || density === 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(ptA.x, ptA.y);
+                        ctx.lineTo(ptB.x, ptB.y);
+                        ctx.strokeStyle = "rgba(0, 210, 211, 0.4)";
+                        ctx.lineWidth = 10;
+                        ctx.shadowBlur = 20;
+                        ctx.shadowColor = "#00d2d3";
+                        ctx.stroke();
+                        ctx.shadowBlur = 0;
+                    }
+
+                    ctx.fillStyle = "#00d2d3";
                     for (let i = 1; i < numDots; i++) {
                         const t = i / numDots;
                         const nx = ptA.x + (ptB.x - ptA.x) * t;
                         const ny = ptA.y + (ptB.y - ptA.y) * t;
-                        
+                        const dotSize = density === 100 ? 4 : 3;
                         ctx.beginPath();
-                        ctx.arc(nx, ny, Math.max(1, 4 - (density/30)), 0, Math.PI * 2); 
+                        ctx.arc(nx, ny, dotSize, 0, Math.PI * 2);
                         ctx.fill();
                     }
-                }
 
-                if (density === 100 && !isSuccessShown) {
-                    isSuccessShown = true;
-                    ctx.beginPath();
-                    ctx.moveTo(ptA.x, ptA.y);
-                    ctx.lineTo(ptB.x, ptB.y);
-                    ctx.strokeStyle = "var(--primary)";
-                    ctx.lineWidth = 4;
-                    ctx.stroke();
-                    localStorage.setItem('sifre_1', 'P');
-                    
-                    setTimeout(() => openModal('resultModal'), 800);
+                    // %100 ise çizgi de çiz
+                    if (density === 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(ptA.x, ptA.y);
+                        ctx.lineTo(ptB.x, ptB.y);
+                        ctx.strokeStyle = "#00d2d3";
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                    }
                 }
             }
 
@@ -310,66 +598,54 @@
         }
 
         function drawPoint(x, y, label, color) {
+            // Glow
+            ctx.beginPath();
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.fillStyle = color.replace(')', ', 0.2)').replace('rgb', 'rgba');
+            ctx.fill();
+
             ctx.beginPath();
             ctx.arc(x, y, 6, 0, Math.PI * 2);
             ctx.fillStyle = color;
             ctx.fill();
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = color;
-            
             ctx.font = "bold 14px Orbitron";
             ctx.fillStyle = "#fff";
-            ctx.shadowBlur = 0;
-            ctx.fillText(label, x - 5, y - 12);
+            ctx.fillText(label, x - 5, y - 16);
+        }
+
+        function showDiscovery(text) {
+            discoveryArea.innerHTML = `<div class="discovery-bubble">${text}</div>`;
+        }
+
+        function setDot(index, dotState) {
+            const dot = document.getElementById('dot' + index);
+            dot.className = 'dot';
+            if (dotState) dot.classList.add(dotState);
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function menuyeDon() { window.parent.postMessage({ tip: 'MENUYE_DON' }, '*'); }
+        function gorevTamamDon() {
+            window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 1, harf: 'P' }, '*');
+            setTimeout(() => menuyeDon(), 300);
+        }
 
-        // --- ÖĞRENCİNİN PARLAK FİKRİ: KAPANIŞ ETİKETLERİNİ SONRADAN EKLİYORUZ ---
-        // Dışarıdan Dosyayı Okuyup Kopyalayan Fonksiyon
         function copyStudentCode() {
             const btn = document.getElementById('copyBtn');
-            btn.innerHTML = "⌛ BEKLEYİN...";
-
-            // ogrenci_kodu.txt dosyasını dışarıdan çekiyoruz (Fetch API)
+            btn.innerHTML = "⌛...";
             fetch('ogrenci_kodu1.txt')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Dosya bulunamadı!");
-                    }
-                    return response.text(); // Dosya içeriğini metin olarak al
-                })
-                .then(kodMetni => {
-                    // Alınan metni panoya kopyala
-                    return navigator.clipboard.writeText(kodMetni);
-                })
+                .then(r => r.text())
+                .then(kod => navigator.clipboard.writeText(kod))
                 .then(() => {
-                    // Başarı durumu
-                    btn.innerHTML = "✓ KOPYALANDI";
-                    btn.style.background = "#2ecc71";
-                    btn.style.borderColor = "#2ecc71";
-                    btn.style.color = "#10142b";
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = "📄 KODU KOPYALA";
-                        btn.style.background = "transparent";
-                        btn.style.borderColor = "var(--accent)";
-                        btn.style.color = "var(--accent)";
-                    }, 2000);
+                    btn.innerHTML = "✓ TAMAM"; btn.style.background = "#2ecc71";
+                    setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; btn.style.background = "transparent"; }, 2000);
                 })
-                .catch(err => {
-                    // Hata durumu
-                    console.error('Hata: ', err);
-                    btn.innerHTML = "❌ HATA OLUŞTU";
-                    alert("Kod alınamadı! Dosyanın aynı klasörde olduğundan emin olun.");
-                    setTimeout(() => {
-                        btn.innerHTML = "📄 KODU KOPYALA";
-                    }, 2000);
-                });
+                .catch(() => alert("Dosya bulunamadı!"));
         }
 
         resizeCanvas();
     </script>
 </body>
+
 </html>

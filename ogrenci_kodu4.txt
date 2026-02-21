@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Benim Çember Projem</title>
+    <style>
+        body { background-color: #0d1b2a; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 30px; }
+        #gameCanvas { background-color: #1e293b; border: 4px solid #10b981; border-radius: 15px; cursor: crosshair; margin-bottom: 20px; }
+        button { background-color: #10b981; color: white; border: none; padding: 12px 25px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; display: none; }
+        #mesajKutusu { background: rgba(255,255,255,0.1); padding: 15px 30px; border-radius: 10px; font-size: 18px; color: #6ee7b7; margin-bottom:15px; }
+    </style>
+</head>
+<body>
+    <h1>📡 Radar Ayarı: Çember Çizimi</h1>
+    <div id="mesajKutusu"><span id="mesaj">1. Adım: Radarın 'Merkez' noktasını seçmek için tıkla!</span></div>
+    
+    <canvas id="gameCanvas" width="600" height="300"></canvas>
+    <button id="pergelBtn" onclick="pergeliDondur()">📏 PERGELİ DÖNDÜR</button>
+
+    <script>
+        // ========================================================
+        // 🛠️ 3. GÖREV: OYUN AYARLARI (JAVASCRIPT BÖLÜMÜ)
+        // Pergelin ve Radarın (Çemberin) renklerini ayarla!
+        // ========================================================
+        
+        let merkezRengi = "#ef4444";     // Radarın merkezi (Kırmızı)
+        let yaricapRengi = "#f59e0b";    // Pergelin kolu / Yarıçap (Sarı)
+        let cemberRengi = "#3b82f6";     // Çemberin dış çizgisi (Mavi)
+        let daireIciRengi = "rgba(59, 130, 246, 0.2)"; // Dairenin içi (Yarı şeffaf mavi)
+        
+        // ========================================================
+        // ⚠️ DİKKAT: BURADAN AŞAĞISI OYUNUN BEYNİDİR (MOTORU). 
+        // ========================================================
+
+        const tuval = document.getElementById("gameCanvas");
+        const cizimAraci = tuval.getContext("2d");
+        const mesajKutusu = document.getElementById("mesaj");
+        const pergelButonu = document.getElementById("pergelBtn");
+
+        let asama = 0; 
+        let merkez = null;
+        let cemberNoktasi = null;
+        let yaricap = 0;
+
+        tuval.addEventListener("mousedown", function(olay) {
+            const x = olay.offsetX;
+            const y = olay.offsetY;
+
+            if (asama === 0) {
+                merkez = { x: x, y: y }; 
+                asama = 1;
+                mesajKutusu.innerHTML = "2. Adım: Radarın genişliğini (Yarıçap) belirlemek için uzağa tıkla!";
+                cizimiGuncelle();
+            } 
+            else if (asama === 1) {
+                cemberNoktasi = { x: x, y: y };
+                yaricap = Math.hypot(cemberNoktasi.x - merkez.x, cemberNoktasi.y - merkez.y);
+                asama = 2;
+                mesajKutusu.innerHTML = "Pergelin kollarını açtın! Şimdi pergeli döndür.";
+                pergelButonu.style.display = "block"; 
+                cizimiGuncelle();
+            }
+        });
+
+        function pergeliDondur() {
+            pergelButonu.style.display = "none";
+            mesajKutusu.innerHTML = "Pergel dönüyor... Merkeze eşit uzaklıktaki tüm noktalar birleşiyor!";
+            
+            let aci = 0;
+            const cizimTuru = setInterval(() => {
+                aci += 0.05; // Yavaş yavaş dön
+                if(aci >= Math.PI * 2) {
+                    clearInterval(cizimTuru);
+                    mesajKutusu.innerHTML = "Tebrikler! Dışı ÇEMBER, içi dolu olunca DAİRE olur.";
+                }
+                cizimiGuncelle(aci);
+            }, 20);
+        }
+
+        function cizimiGuncelle(anlikAci = 0) {
+            cizimAraci.clearRect(0, 0, tuval.width, tuval.height);
+
+            // Yarıçap çizgisi (Pergel kolu)
+            if (merkez && cemberNoktasi && anlikAci === 0) {
+                cizimAraci.beginPath();
+                cizimAraci.setLineDash([5, 5]); // Kesik çizgi
+                cizimAraci.moveTo(merkez.x, merkez.y);
+                cizimAraci.lineTo(cemberNoktasi.x, cemberNoktasi.y);
+                cizimAraci.strokeStyle = yaricapRengi;
+                cizimAraci.lineWidth = 2;
+                cizimAraci.stroke();
+                cizimAraci.setLineDash([]); // Normale dön
+            }
+
+            // Çemberi çiz (Animasyonlu)
+            if (asama >= 2 && anlikAci > 0) {
+                cizimAraci.beginPath();
+                cizimAraci.arc(merkez.x, merkez.y, yaricap, 0, Math.min(anlikAci, Math.PI * 2));
+                cizimAraci.strokeStyle = cemberRengi;
+                cizimAraci.lineWidth = 4;
+                cizimAraci.stroke();
+
+                if(anlikAci >= Math.PI * 2) {
+                    // Tamamlandığında içini boya (Daire)
+                    cizimAraci.fillStyle = daireIciRengi;
+                    cizimAraci.fill();
+                }
+            }
+
+            // Merkez noktası
+            if (merkez) {
+                cizimAraci.beginPath();
+                cizimAraci.arc(merkez.x, merkez.y, 6, 0, Math.PI * 2);
+                cizimAraci.fillStyle = merkezRengi;
+                cizimAraci.fill();
+                cizimAraci.fillStyle = "white";
+                cizimAraci.font = "14px Arial";
+                cizimAraci.fillText("Merkez", merkez.x - 25, merkez.y - 10);
+            }
+        }
+    </script>
+</body>
+</html>

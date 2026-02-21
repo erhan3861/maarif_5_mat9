@@ -1,95 +1,256 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Güneş Paneli - Açının Keşfi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <title>Güneş Paneli - Açı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --primary: #f39c12; /* Güneş Sarısı/Turuncusu */
+            --primary: #f39c12;
             --dark-bg: #10142b;
             --accent: #3498db;
-            --text-light: #ecf0f1;
+            --text-light: #c8d6e5;
             --canvas-bg: #1a1a2e;
         }
 
         body {
-            margin: 0; padding: 0;
+            margin: 0;
+            padding: 0;
             font-family: 'Fredoka', sans-serif;
-            background-color: var(--dark-bg); color: var(--text-light);
-            height: 100vh; max-height: 615px; overflow: hidden;
-            display: flex; flex-direction: column;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            height: 100vh;
+            max-height: 780px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* HUD */
         .hud {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 5px 20px; background: rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid rgba(243, 156, 18, 0.2); height: 45px; flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(243, 156, 18, 0.2);
+            height: 54px;
+            flex-shrink: 0;
         }
-        .hud h1 { font-family: 'Orbitron'; margin: 0; color: var(--primary); font-size: 1.1rem; }
-        .hud-btn {
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white; padding: 4px 12px; border-radius: 20px;
-            cursor: pointer; transition: 0.2s; font-family: 'Orbitron';
-            text-decoration: none; font-size: 0.75rem; display: flex; align-items: center; justify-content: center;
-        }
-        .hud-btn:hover { background: var(--primary); color: #10142b; border-color: var(--primary); }
-        .btn-code { border-color: var(--accent); color: var(--accent); }
-        .btn-code:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        /* Oyun Alanı */
+        .hud h1 {
+            font-family: 'Orbitron';
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .hud-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Orbitron';
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hud-btn:hover {
+            background: var(--primary);
+            color: #10142b;
+            border-color: var(--primary);
+        }
+
+        .btn-code {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-code:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
         .stage {
-            flex-grow: 1; display: flex; flex-direction: column;
-            align-items: center; padding: 10px; position: relative;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            position: relative;
         }
 
         .info-panel {
-            background: rgba(243, 156, 18, 0.1); border: 1px solid var(--primary);
-            padding: 10px 15px; border-radius: 8px; color: #fff;
-            font-weight: 600; font-size: 0.9rem; margin-bottom: 10px;
-            width: 90%; max-width: 600px; text-align: center;
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px solid var(--primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
         }
 
-        /* Etkileşimli Tuval */
         .canvas-container {
-            width: 90%; max-width: 600px; height: 300px;
+            width: 90%;
+            max-width: 700px;
+            height: 360px;
             background-color: var(--canvas-bg);
-            background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
             background-size: 20px 20px;
-            border: 2px solid #34495e; border-radius: 12px;
-            position: relative; cursor: crosshair;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+            border: 2px solid #34495e;
+            border-radius: 12px;
+            position: relative;
+            cursor: crosshair;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
             overflow: hidden;
         }
-        canvas { width: 100%; height: 100%; border-radius: 10px; }
 
-        /* İlerleme Noktaları */
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .discovery-bubble {
+            background: rgba(241, 196, 15, 0.15);
+            border: 1px solid rgba(241, 196, 15, 0.4);
+            border-left: 4px solid #f1c40f;
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: #f1c40f;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+            margin-top: 5px;
+            opacity: 0;
+            animation: bubbleFadeIn 0.8s ease forwards;
+        }
+
+        @keyframes bubbleFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .progress-dots {
-            display: flex; gap: 10px; margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
         }
-        .dot { width: 15px; height: 15px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: 0.3s; }
-        .dot.active { background: var(--primary); transform: scale(1.2); box-shadow: 0 0 10px var(--primary); }
 
-        /* Modallar */
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2c3e50;
+            transition: 0.3s;
+        }
+
+        .dot.done {
+            background: #2ecc71;
+        }
+
+        .dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
         .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); display: none; justify-content: center;
-            align-items: center; z-index: 100; backdrop-filter: blur(3px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(3px);
         }
+
         .modal-box {
-            background: var(--dark-bg); border: 1px solid var(--primary);
-            color: var(--text-light); padding: 20px; border-radius: 15px;
-            max-width: 450px; width: 85%; text-align: center; position: relative;
+            background: var(--dark-bg);
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; color: #8395a7; }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #8395a7;
+        }
+
+        .secret-letter {
+            font-size: 2rem;
+            color: #f1c40f;
+            font-family: 'Orbitron';
+            background: rgba(241, 196, 15, 0.1);
+            border: 2px dashed #f1c40f;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.8rem;
+        }
+
+        .compare-table th {
+            background: rgba(243, 156, 18, 0.2);
+            color: var(--primary);
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .compare-table td {
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #bdc3c7;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="hud">
-        <a href="index.html" class="hud-btn">❮ MENÜ</a>
+        <button class="hud-btn" onclick="menuyeDon()">❮ MENÜ</button>
         <h1>GÜNEŞ PANELİ</h1>
         <div style="display:flex; gap:8px;">
             <button class="hud-btn" onclick="openModal('missionModal')">📜 GÖREV</button>
@@ -106,10 +267,13 @@
             <canvas id="gameCanvas"></canvas>
         </div>
 
+        <div id="discoveryArea"></div>
+
         <div class="progress-dots" id="dots">
             <div class="dot active" id="dot0"></div>
             <div class="dot" id="dot1"></div>
             <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
         </div>
     </div>
 
@@ -117,15 +281,17 @@
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('missionModal')">&times;</span>
             <h2 style="color:var(--primary); margin-top:0;">GÖREV TALİMATI</h2>
-            
-            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:left; margin-bottom:15px; border-left:4px solid var(--primary);">
+            <div
+                style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:left; margin-bottom:15px; border-left:4px solid var(--primary);">
                 <h3 style="color:var(--primary); font-size:0.95rem; margin:0 0 5px 0;">Öğrenme Çıktısı (MAT.5.3.1)</h3>
-                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>Kazanım:</b> Ölçüsüz cetvel yardımıyla bir noktadan iki farklı noktaya ışınlar çizer. Meydana gelen şekli açı olarak tanır.</p>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>Kazanım:</b> Ölçüsüz cetvel yardımıyla bir
+                    noktadan iki farklı noktaya ışınlar çizer. Meydana gelen şekli açı olarak tanır.</p>
             </div>
-
-            <div style="background:rgba(52, 152, 219, 0.1); padding:15px; border-radius:10px; text-align:left; border-left:4px solid var(--accent);">
+            <div
+                style="background:rgba(52, 152, 219, 0.1); padding:15px; border-radius:10px; text-align:left; border-left:4px solid var(--accent);">
                 <h3 style="color:var(--accent); font-size:0.95rem; margin:0 0 5px 0;">Açı Nedir?</h3>
-                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;">Aynı başlangıç noktasına sahip iki ışının arasındaki "dönme miktarı"na <b>AÇI</b> denir. Güneş panelini hizalamak için bu iki ışını çizmen gerekiyor!</p>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;">Aynı başlangıç noktasına sahip iki ışının
+                    arasındaki "dönme miktarı"na <b>AÇI</b> denir.</p>
             </div>
         </div>
     </div>
@@ -134,22 +300,69 @@
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('codeModal')">&times;</span>
             <h2 style="color:var(--accent); margin-top:0;">KOD LABORATUVARI</h2>
-            <p style="font-size:0.85rem;">Bilgisayarlar açıyı çizerken Pi (π) sayısını ve radyan cinsinden değerleri kullanırlar. Öğrenci kodunu kopyala ve editörde açıların renkleriyle oyna!</p>
-            
+            <p style="font-size:0.85rem;">Kodu kopyala ve editörde açıların renkleriyle oyna!</p>
             <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
-                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()" style="padding:10px 15px; font-size:0.8rem; font-weight:bold;">📄 KODU KOPYALA</button>
-                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code" style="padding:10px 15px; font-size:0.8rem; background:var(--accent); color:#10142b; font-weight:bold;">💻 EDİTÖRDE DENE</a>
+                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()"
+                    style="padding:10px 15px; font-size:0.8rem; font-weight:bold;">📄 KODU KOPYALA</button>
+                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
+                    style="padding:10px 15px; font-size:0.8rem; background:var(--accent); color:#10142b; font-weight:bold;">💻
+                    EDİTÖRDE DENE</a>
             </div>
         </div>
     </div>
 
     <div class="modal" id="resultModal">
         <div class="modal-box">
-            <div id="res-emoji" style="font-size:3rem; margin-bottom:5px;"></div>
+            <div style="font-size:3rem; margin-bottom:5px;">🎉</div>
             <h2 id="res-title" style="color:var(--primary);"></h2>
-            <p id="res-desc" style="font-size:0.9rem; line-height: 1.5;"></p>
-            <button class="hud-btn" onclick="closeModal('resultModal'); resetGame();" style="display:inline-block; margin-top:10px; background:var(--primary); padding:10px 30px;">YENİDEN ÇİZ</button>
-            <button class="hud-btn" onclick="location.href='index.html'" style="display:inline-block; margin-top:10px; background:#2c3e50; padding:10px 30px;">MENÜYE DÖN</button>
+            <p id="res-desc" style="font-size:0.85rem; line-height: 1.5;"></p>
+
+            <table class="compare-table">
+                <tr>
+                    <th>Açı Türü</th>
+                    <th>Derece Aralığı</th>
+                    <th>Görünüm</th>
+                </tr>
+                <tr>
+                    <td>Dar Açı</td>
+                    <td>0° — 90°</td>
+                    <td>🔹 Küçük açıklık</td>
+                </tr>
+                <tr>
+                    <td>Dik Açı</td>
+                    <td>Tam 90°</td>
+                    <td>⬜ Kare sembolü</td>
+                </tr>
+                <tr>
+                    <td>Geniş Açı</td>
+                    <td>90° — 180°</td>
+                    <td>🔸 Büyük açıklık</td>
+                </tr>
+                <tr>
+                    <td>Doğru Açı</td>
+                    <td>Tam 180°</td>
+                    <td>➖ Düz çizgi</td>
+                </tr>
+            </table>
+
+            <div
+                style="background:rgba(243,156,18,0.1); padding:10px; border-radius:8px; border-left:4px solid var(--primary); text-align:left; margin:10px 0;">
+                <p style="font-size:0.8rem; margin:0; color:#f39c12;">📌 <b>Tanım:</b> Ortak bir başlangıç noktasından
+                    (köşe) çıkan iki ışın arasındaki dönme miktarına <b>AÇI</b> denir. Açının birimi <b>derece
+                        (°)</b>'dir.</p>
+            </div>
+
+            <div style="margin-top:10px;">
+                <div style="font-size:0.8rem; color:#8395a7;">GİZLİ ŞİFRE HARFİNİ BULDUN!</div>
+                <div class="secret-letter">R</div>
+            </div>
+
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:15px;">
+                <button class="hud-btn" onclick="closeModal('resultModal'); resetGame();"
+                    style="background:var(--primary); padding:10px 30px;">YENİDEN ÇİZ</button>
+                <button class="hud-btn" onclick="gorevTamamDon()" style="background:#2c3e50; padding:10px 30px;">MENÜYE
+                    DÖN</button>
+            </div>
         </div>
     </div>
 
@@ -157,6 +370,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const instText = document.getElementById('instruction');
+        const discoveryArea = document.getElementById('discoveryArea');
 
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
@@ -165,159 +379,294 @@
         }
         window.addEventListener('resize', resizeCanvas);
 
-        let state = 0; 
-        let kose = null;
-        let yon1 = null;
-        let yon2 = null;
+        let state = 0;
+        let kose = null, yon1 = null, yon2 = null;
+        let isinAnimProgress1 = 0, isinAnimProgress2 = 0;
+        let aciAnimProgress = 0;
 
-        canvas.addEventListener('mousedown', function(e) {
+        canvas.addEventListener('mousedown', function (e) {
             const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
 
             if (state === 0) {
-                kose = {x, y};
+                kose = { x, y };
                 state = 1;
+                setDot(0, 'done'); setDot(1, 'active');
                 instText.innerHTML = "📐 <b>2. Adım:</b> Panel için <b>1. Işının</b> yönüne (uzaya) tıkla.";
-                document.getElementById('dot0').classList.remove('active');
-                document.getElementById('dot1').classList.add('active');
+                showDiscovery("💡 Bu ortak noktaya KÖŞE NOKTASI denir. Tüm açıların bir köşesi vardır!");
                 drawCanvas();
-            } 
+            }
             else if (state === 1) {
-                // Işın köşeden belli bir mesafe uzakta olsun
                 const dist = Math.hypot(x - kose.x, y - kose.y);
-                if(dist < 30) {
-                    instText.innerHTML = "⚠️ Çok yakın! Işın yönünü biraz daha uzağa seç.";
+                if (dist < 30) {
+                    instText.innerHTML = "⚠️ Çok yakın! 1. ışının yönünü biraz daha uzağa seç.";
                     return;
                 }
-                yon1 = {x, y};
+                yon1 = { x, y };
                 state = 2;
-                instText.innerHTML = "📐 <b>3. Adım:</b> Aynı köşeden çıkacak <b>2. Işının</b> yönünü seç.";
-                document.getElementById('dot1').classList.remove('active');
-                document.getElementById('dot2').classList.add('active');
-                drawCanvas();
+                // Animasyonlu ışın uzaması
+                animateIsin1();
             }
-            else if (state === 2) {
+            else if (state === 3) {
                 const dist = Math.hypot(x - kose.x, y - kose.y);
-                if(dist < 30) { return; }
-                yon2 = {x, y};
-                state = 3;
-                document.getElementById('dot2').classList.remove('active');
-                
-                drawCanvas(); // Çizimi güncelle
-                localStorage.setItem('sifre_3', 'R');
-                setTimeout(() => {
-                    showResult("GÜNEŞ PANELİ HİZALANDI! ☀️", "Fark ettin mi? Bir başlangıç noktasından çıkan iki farklı ışın çizdik. Bu iki ışın arasındaki <b>dönme miktarına (kırmızı alana) AÇI</b> diyoruz!", "🎉");
-                }, 800);
+                if (dist < 30) return;
+                yon2 = { x, y };
+                state = 4;
+                // Animasyonlu 2. ışın + açı
+                animateIsin2();
             }
         });
+
+        function animateIsin1() {
+            isinAnimProgress1 += 0.03;
+            if (isinAnimProgress1 > 1) isinAnimProgress1 = 1;
+            drawCanvas();
+
+            if (isinAnimProgress1 < 1) {
+                requestAnimationFrame(animateIsin1);
+            } else {
+                state = 3;
+                setDot(1, 'done'); setDot(2, 'active');
+                instText.innerHTML = "📐 <b>3. Adım:</b> Aynı köşeden çıkacak <b>2. Işının</b> yönünü seç.";
+                showDiscovery("💡 İlk ışın hazır. İkinci ışını nereye koyarsan aralarında farklı büyüklükte bir AÇI oluşur!");
+            }
+        }
+
+        function animateIsin2() {
+            isinAnimProgress2 += 0.03;
+            if (isinAnimProgress2 > 1) isinAnimProgress2 = 1;
+            drawCanvas();
+
+            if (isinAnimProgress2 < 1) {
+                requestAnimationFrame(animateIsin2);
+            } else {
+                // Şimdi açı yayını animasyonla çiz
+                state = 5;
+                setDot(2, 'done'); setDot(3, 'active');
+                animateAngleArc();
+            }
+        }
+
+        function animateAngleArc() {
+            aciAnimProgress += 0.02;
+            if (aciAnimProgress > 1) aciAnimProgress = 1;
+            drawCanvas();
+
+            if (aciAnimProgress < 1) {
+                requestAnimationFrame(animateAngleArc);
+            } else {
+                state = 6;
+                setDot(3, 'done');
+
+                const dereceler = hesaplaAci();
+                const aciTuru = getAciTuru(dereceler);
+
+                showDiscovery(`🎯 Bu açı ${dereceler}° — ${aciTuru}! İki ışın arasındaki bu dönme miktarına AÇI denir.`);
+                instText.innerHTML = `✅ Açı: <b>${dereceler}° (${aciTuru})</b> — Güneş paneli hizalandı!`;
+
+                setTimeout(() => {
+                    document.getElementById('res-title').innerText = `${aciTuru.toUpperCase()} — ${dereceler}°`;
+                    document.getElementById('res-desc').innerHTML = `Köşe noktasından çıkan iki ışın arasında <b>${dereceler} derecelik bir ${aciTuru.toLowerCase()}</b> oluşturdun! ${getAciAciklama(aciTuru)}`;
+                    openModal('resultModal');
+                }, 2000);
+            }
+        }
+
+        function hesaplaAci() {
+            const a1 = Math.atan2(yon1.y - kose.y, yon1.x - kose.x);
+            const a2 = Math.atan2(yon2.y - kose.y, yon2.x - kose.x);
+            let diff = Math.abs(a1 - a2) * (180 / Math.PI);
+            if (diff > 180) diff = 360 - diff;
+            return Math.round(diff);
+        }
+
+        function getAciTuru(derece) {
+            if (derece < 90) return "Dar Açı";
+            if (derece === 90) return "Dik Açı";
+            if (derece < 180) return "Geniş Açı";
+            return "Doğru Açı";
+        }
+
+        function getAciAciklama(tur) {
+            if (tur === "Dar Açı") return "90 dereceden küçük açılara <b>Dar Açı</b> denir.";
+            if (tur === "Dik Açı") return "Tam 90 derecelik açıya <b>Dik Açı</b> denir. Kare sembolü ile gösterilir!";
+            if (tur === "Geniş Açı") return "90 dereceden büyük açılara <b>Geniş Açı</b> denir.";
+            return "Tam 180 derecelik açıya <b>Doğru Açı</b> denir.";
+        }
 
         function drawCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.lineWidth = 4;
 
-            const distMax = 2000; // Işınların sonsuza uzanması için büyük sayı
+            const distMax = 2000;
 
-            // 1. Işın (Mavi)
-            if (kose && yon1) {
+            // 1. Işın (Mavi) - animasyonlu
+            if (kose && yon1 && isinAnimProgress1 > 0) {
                 const aci1 = Math.atan2(yon1.y - kose.y, yon1.x - kose.x);
-                ctx.strokeStyle = "#3498db";
+                const len = distMax * isinAnimProgress1;
+
+                // Glow
                 ctx.beginPath();
                 ctx.moveTo(kose.x, kose.y);
-                ctx.lineTo(kose.x + Math.cos(aci1) * distMax, kose.y + Math.sin(aci1) * distMax);
+                ctx.lineTo(kose.x + Math.cos(aci1) * len, kose.y + Math.sin(aci1) * len);
+                ctx.strokeStyle = "rgba(52, 152, 219, 0.3)";
+                ctx.lineWidth = 10;
                 ctx.stroke();
+
+                // Core
+                ctx.beginPath();
+                ctx.moveTo(kose.x, kose.y);
+                ctx.lineTo(kose.x + Math.cos(aci1) * len, kose.y + Math.sin(aci1) * len);
+                ctx.strokeStyle = "#3498db";
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Etiket
+                if (isinAnimProgress1 >= 1) {
+                    ctx.fillStyle = "#3498db";
+                    ctx.font = "bold 11px Orbitron";
+                    ctx.fillText("1. Işın", kose.x + Math.cos(aci1) * 100 - 10, kose.y + Math.sin(aci1) * 100 - 12);
+                }
             }
 
-            // 2. Işın (Yeşil) ve Açı Yayı (Kırmızı)
-            if (kose && yon2) {
+            // 2. Işın (Yeşil) - animasyonlu
+            if (kose && yon2 && isinAnimProgress2 > 0) {
                 const aci2 = Math.atan2(yon2.y - kose.y, yon2.x - kose.x);
-                ctx.strokeStyle = "#2ecc71";
+                const len = distMax * isinAnimProgress2;
+
                 ctx.beginPath();
                 ctx.moveTo(kose.x, kose.y);
-                ctx.lineTo(kose.x + Math.cos(aci2) * distMax, kose.y + Math.sin(aci2) * distMax);
+                ctx.lineTo(kose.x + Math.cos(aci2) * len, kose.y + Math.sin(aci2) * len);
+                ctx.strokeStyle = "rgba(46, 204, 113, 0.3)";
+                ctx.lineWidth = 10;
                 ctx.stroke();
 
-                // Açıyı (Dönme Miktarını) Çiz
+                ctx.beginPath();
+                ctx.moveTo(kose.x, kose.y);
+                ctx.lineTo(kose.x + Math.cos(aci2) * len, kose.y + Math.sin(aci2) * len);
+                ctx.strokeStyle = "#2ecc71";
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                if (isinAnimProgress2 >= 1) {
+                    ctx.fillStyle = "#2ecc71";
+                    ctx.font = "bold 11px Orbitron";
+                    ctx.fillText("2. Işın", kose.x + Math.cos(aci2) * 100 - 10, kose.y + Math.sin(aci2) * 100 - 12);
+                }
+            }
+
+            // Açı Yayı (animasyonlu)
+            if (kose && yon1 && yon2 && aciAnimProgress > 0) {
                 const a1 = Math.atan2(yon1.y - kose.y, yon1.x - kose.x);
                 const a2 = Math.atan2(yon2.y - kose.y, yon2.x - kose.x);
-                
+
+                // Açının doğru yönünü hesapla
+                let startAngle = Math.min(a1, a2);
+                let endAngle = Math.max(a1, a2);
+                if (endAngle - startAngle > Math.PI) {
+                    const temp = startAngle;
+                    startAngle = endAngle;
+                    endAngle = temp + Math.PI * 2;
+                }
+
+                const currentEnd = startAngle + (endAngle - startAngle) * aciAnimProgress;
+
+                // Açı içi
                 ctx.beginPath();
                 ctx.moveTo(kose.x, kose.y);
-                ctx.arc(kose.x, kose.y, 60, Math.min(a1, a2), Math.max(a1, a2));
-                ctx.fillStyle = "rgba(231, 76, 60, 0.4)"; // Yarı şeffaf kırmızı (Açının içi)
+                ctx.arc(kose.x, kose.y, 60, startAngle, currentEnd);
+                ctx.fillStyle = "rgba(231, 76, 60, 0.3)";
                 ctx.fill();
 
+                // Açı yayı
                 ctx.beginPath();
-                ctx.arc(kose.x, kose.y, 60, Math.min(a1, a2), Math.max(a1, a2));
-                ctx.strokeStyle = "#e74c3c"; // Açı Yayı
+                ctx.arc(kose.x, kose.y, 60, startAngle, currentEnd);
+                ctx.strokeStyle = "#e74c3c";
+                ctx.lineWidth = 3;
                 ctx.stroke();
+
+                // Canlı derece gösterimi
+                const dereceler = Math.round(hesaplaAci() * aciAnimProgress);
+                const midAngle = (startAngle + currentEnd) / 2;
+                const labelR = 40;
+                ctx.fillStyle = "#e74c3c";
+                ctx.font = "bold 16px Orbitron";
+                ctx.fillText(`${dereceler}°`, kose.x + Math.cos(midAngle) * labelR - 15, kose.y + Math.sin(midAngle) * labelR + 5);
+
+                // Açı türü etiketi (bitince)
+                if (aciAnimProgress >= 1) {
+                    const finalDerece = hesaplaAci();
+                    const tur = getAciTuru(finalDerece);
+                    ctx.fillStyle = "#fff";
+                    ctx.font = "bold 13px Fredoka";
+                    ctx.fillText(tur, kose.x + Math.cos(midAngle) * 95 - 20, kose.y + Math.sin(midAngle) * 95 + 5);
+                }
             }
 
-            // Ortak Başlangıç Noktası (Köşe)
+            // Köşe Noktası
             if (kose) {
                 ctx.beginPath();
+                ctx.arc(kose.x, kose.y, 12, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(243, 156, 18, 0.2)";
+                ctx.fill();
+
+                ctx.beginPath();
                 ctx.arc(kose.x, kose.y, 8, 0, Math.PI * 2);
-                ctx.fillStyle = "#f39c12"; // Turuncu Köşe
+                ctx.fillStyle = "#f39c12";
                 ctx.fill();
                 ctx.fillStyle = "white";
-                ctx.font = "bold 16px Orbitron";
-                ctx.fillText("Köşe", kose.x - 20, kose.y - 15);
+                ctx.font = "bold 14px Orbitron";
+                ctx.fillText("Köşe", kose.x - 20, kose.y - 18);
             }
         }
 
-        function showResult(title, desc, emoji) {
-            document.getElementById('res-emoji').innerText = emoji;
-            document.getElementById('res-title').innerText = title;
-            document.getElementById('res-desc').innerHTML = desc;
-            openModal('resultModal');
+        function showDiscovery(text) {
+            discoveryArea.innerHTML = `<div class="discovery-bubble">${text}</div>`;
         }
 
         function resetGame() {
             state = 0; kose = null; yon1 = null; yon2 = null;
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            isinAnimProgress1 = 0; isinAnimProgress2 = 0; aciAnimProgress = 0;
+            document.querySelectorAll('.dot').forEach(d => d.className = 'dot');
             document.getElementById('dot0').classList.add('active');
+            discoveryArea.innerHTML = '';
             instText.innerHTML = "☀️ <b>1. Adım:</b> Panele enerji sağlamak için ekranda bir <b>Ortak Başlangıç Noktası (Köşe)</b> işaretle.";
             drawCanvas();
         }
 
+        function setDot(index, dotState) {
+            const dot = document.getElementById('dot' + index);
+            dot.className = 'dot';
+            if (dotState) dot.classList.add(dotState);
+        }
+
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function menuyeDon() { window.parent.postMessage({ tip: 'MENUYE_DON' }, '*'); }
+        function gorevTamamDon() {
+            window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 3, harf: 'R' }, '*');
+            setTimeout(() => menuyeDon(), 300);
+        }
 
-        // MÜKEMMEL ÇÖZÜM: DIŞARIDAN FETCH İLE ÖĞRENCİ KODUNU ALMA
         function copyStudentCode() {
             const btn = document.getElementById('copyBtn');
             btn.innerHTML = "⌛ BEKLEYİN...";
-
-            // ogrenci_kodu3.txt dosyasını çekiyoruz
             fetch('ogrenci_kodu3.txt')
-                .then(response => {
-                    if (!response.ok) { throw new Error("Dosya bulunamadı!"); }
-                    return response.text();
-                })
-                .then(kodMetni => { return navigator.clipboard.writeText(kodMetni); })
+                .then(response => { if (!response.ok) throw new Error("Dosya bulunamadı!"); return response.text(); })
+                .then(kodMetni => navigator.clipboard.writeText(kodMetni))
                 .then(() => {
-                    btn.innerHTML = "✓ KOPYALANDI";
-                    btn.style.background = "#2ecc71";
-                    btn.style.borderColor = "#2ecc71";
-                    btn.style.color = "#10142b";
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = "📄 KODU KOPYALA";
-                        btn.style.background = "transparent";
-                        btn.style.borderColor = "var(--accent)";
-                        btn.style.color = "var(--accent)";
-                    }, 2000);
+                    btn.innerHTML = "✓ KOPYALANDI"; btn.style.background = "#2ecc71"; btn.style.color = "#10142b";
+                    setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; btn.style.background = "transparent"; btn.style.color = "var(--accent)"; }, 2000);
                 })
                 .catch(err => {
-                    console.error('Hata: ', err);
-                    btn.innerHTML = "❌ HATA OLUŞTU";
-                    alert("Kod alınamadı! Lütfen ogrenci_kodu3.txt dosyasının aynı klasörde olduğundan emin olun.");
-                    setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; }, 2000);
+                    alert("Kod alınamadı! ogrenci_kodu3.txt dosyasını kontrol edin.");
+                    btn.innerHTML = "📄 KODU KOPYALA";
                 });
         }
 
-        // Başlangıç kurulumu
         resizeCanvas();
     </script>
 </body>
+
 </html>

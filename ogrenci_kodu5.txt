@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Benim Dikme Projem</title>
+    <style>
+        /* ========================================================
+           🎨 1. GÖREV: TASARIM VE RENKLER (CSS BÖLÜMÜ)
+           ======================================================== */
+        body { 
+            background-color: #1a1a2e; /* Uzay arka planı */
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; margin-top: 30px; 
+        }
+
+        #gameCanvas { 
+            background-color: #16213e; /* Çizim ekranı */
+            border: 4px solid #e94560; /* Çerçeve rengi */
+            border-radius: 15px; 
+            cursor: crosshair; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 20px rgba(233, 69, 96, 0.4);
+        }
+
+        button { 
+            background-color: #e94560; color: white; border: none; 
+            padding: 12px 25px; font-size: 18px; font-weight: bold; 
+            border-radius: 8px; cursor: pointer; display: none; 
+        }
+        
+        #mesajKutusu {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            color: #f1c40f;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📐 Güvenli Rota: Dikme Çizimi</h1>
+    
+    <div id="mesajKutusu">
+        <span id="mesaj">1. Adım: Geminin (Noktanın) konumunu uzay boşluğuna tıkla!</span>
+    </div>
+
+    <canvas id="gameCanvas" width="600" height="300"></canvas>
+    
+    <button id="gonyeBtn" onclick="gonyeKullan()">📐 GÖNYE KULLAN (En Kısa Yolu Çiz)</button>
+
+    <script>
+        // ========================================================
+        // 🛠️ 3. GÖREV: OYUN AYARLARI (JAVASCRIPT BÖLÜMÜ)
+        // Uzay gemisinin, güvenli yolun ve dikmenin renklerini ayarla!
+        // ========================================================
+        
+        let gemiRengi = "#f1c40f";        // Uzay Gemisinin Rengi (Sarı)
+        let guvenliBolgeRengi = "#2ecc71"; // Güvenli Bölge (Aşağıdaki yatay Doğru) Rengi (Yeşil)
+        let dikmeRengi = "#e74c3c";        // İndirilen Dikme Çizgisinin Rengi (Kırmızı)
+        
+        // ========================================================
+        // ⚠️ DİKKAT: BURADAN AŞAĞISI OYUNUN BEYNİDİR (MOTORU). 
+        // ========================================================
+
+        const tuval = document.getElementById("gameCanvas");
+        const cizimAraci = tuval.getContext("2d");
+        const mesajKutusu = document.getElementById("mesaj");
+        const gonyeButonu = document.getElementById("gonyeBtn");
+
+        let asama = 0; 
+        let gemi = null;
+        const dogruY = 260; // Güvenli bölgenin (doğrunun) Y eksenindeki yeri
+
+        // Başlangıçta güvenli bölgeyi çiz
+        cizimiGuncelle();
+
+        tuval.addEventListener("mousedown", function(olay) {
+            if (asama === 0) {
+                const x = olay.offsetX;
+                const y = olay.offsetY;
+                
+                // Nokta doğruya (zemine) çok yakın olmasın diye güvenlik kalkanı
+                if (y > 220) {
+                    alert("Zemine çok yakınsın! Biraz daha yukarı tıkla.");
+                    return; 
+                }
+
+                gemi = { x: x, y: y }; 
+                asama = 1;
+                mesajKutusu.innerHTML = "Harika! Şimdi zemine giden EN KISA YOLU (Dikme) bulmak için Gönye kullan.";
+                gonyeButonu.style.display = "block"; 
+                cizimiGuncelle();
+            } 
+        });
+
+        function gonyeKullan() {
+            gonyeButonu.style.display = "none";
+            mesajKutusu.innerHTML = "Sistem Çiziyor... Gönye ile doğruya 90 derecelik bir dikme indiriliyor.";
+            asama = 2;
+            
+            let inenY = gemi.y;
+            const animasyon = setInterval(() => {
+                inenY += 6; // Çizgiyi aşağı doğru yavaşça indir
+                if (inenY >= dogruY) {
+                    inenY = dogruY;
+                    clearInterval(animasyon);
+                    mesajKutusu.innerHTML = "Tebrikler! Bir noktadan bir doğruya çizilebilecek en kısa yol DİKME'dir.";
+                    cizimiGuncelle(true); 
+                } else {
+                    cizimAraci.beginPath();
+                    cizimAraci.moveTo(gemi.x, gemi.y);
+                    cizimAraci.lineTo(gemi.x, inenY);
+                    cizimAraci.strokeStyle = dikmeRengi;
+                    cizimAraci.lineWidth = 4;
+                    cizimAraci.stroke();
+                }
+            }, 20);
+        }
+
+        function cizimiGuncelle(tamamlandi = false) {
+            cizimAraci.clearRect(0, 0, tuval.width, tuval.height);
+
+            // Güvenli Bölge (Doğru)
+            cizimAraci.beginPath();
+            cizimAraci.moveTo(0, dogruY);
+            cizimAraci.lineTo(tuval.width, dogruY);
+            cizimAraci.strokeStyle = guvenliBolgeRengi;
+            cizimAraci.lineWidth = 6;
+            cizimAraci.stroke();
+            
+            cizimAraci.fillStyle = "white";
+            cizimAraci.font = "14px Arial";
+            cizimAraci.fillText("Güvenli Bölge (Doğru)", 20, dogruY + 25);
+
+            // Gemi (Nokta)
+            if (gemi) {
+                cizimAraci.beginPath();
+                cizimAraci.arc(gemi.x, gemi.y, 8, 0, Math.PI * 2);
+                cizimAraci.fillStyle = gemiRengi;
+                cizimAraci.fill();
+            }
+            
+            // Dikme tamamlandıysa 90 derece sembolünü (kare+nokta) ekle
+            if (tamamlandi) {
+                cizimAraci.beginPath();
+                cizimAraci.moveTo(gemi.x, gemi.y);
+                cizimAraci.lineTo(gemi.x, dogruY);
+                cizimAraci.strokeStyle = dikmeRengi;
+                cizimAraci.lineWidth = 4;
+                cizimAraci.stroke();
+                
+                // 90 Derece Sembolü (Dik Açı)
+                cizimAraci.strokeStyle = "white";
+                cizimAraci.lineWidth = 2;
+                cizimAraci.strokeRect(gemi.x, dogruY - 20, 20, 20); // Kare çizer
+                
+                cizimAraci.fillStyle = "white";
+                cizimAraci.beginPath();
+                cizimAraci.arc(gemi.x + 10, dogruY - 10, 3, 0, Math.PI * 2); // Karenin içine nokta koyar
+                cizimAraci.fill();
+            }
+        }
+    </script>
+</body>
+</html>

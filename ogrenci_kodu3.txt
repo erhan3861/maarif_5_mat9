@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Benim Açı Projem</title>
+    <style>
+        /* ========================================================
+           🎨 1. GÖREV: TASARIM VE RENKLER (CSS BÖLÜMÜ)
+           ======================================================== */
+        body { 
+            background-color: #0f172a; /* Uzay arka planı */
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; margin-top: 30px; 
+        }
+
+        #gameCanvas { 
+            background-color: #1e293b; /* Çizim ekranı */
+            border: 4px solid #f59e0b; /* Çerçeve rengi */
+            border-radius: 15px; 
+            cursor: crosshair; 
+            margin-bottom: 20px; 
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+
+        #durumKutusu {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            color: #fbd38d;
+        }
+    </style>
+</head>
+<body>
+    <h1>☀️ Güneş Paneli: Açı Oluşturma</h1>
+    
+    <div id="durumKutusu">
+        <span id="mesaj">1. Adım: Başlangıç (Köşe) noktasına tıkla!</span>
+    </div>
+
+    <br>
+    <canvas id="gameCanvas" width="600" height="300"></canvas>
+
+    <script>
+        // ========================================================
+        // 🛠️ 3. GÖREV: OYUN AYARLARI (JAVASCRIPT BÖLÜMÜ)
+        // Açı yayının ve ışınların renklerini buradan değiştir!
+        // ========================================================
+        
+        let koseNoktasiRengi = "#f59e0b"; // Ortak başlangıç noktası (Sarı)
+        let isin1Rengi = "#38bdf8";       // 1. Işının rengi (Açık Mavi)
+        let isin2Rengi = "#10b981";       // 2. Işının rengi (Yeşil)
+        let aciYayiRengi = "#ef4444";     // İki ışın arasındaki Açının rengi (Kırmızı)
+        
+        let cizgiKalinligi = 5;           // Çizgilerin kalınlığı
+        let aciYayiBoyutu = 50;           // Açı yayının büyüklüğü
+        
+        // ========================================================
+        // ⚠️ DİKKAT: BURADAN AŞAĞISI OYUNUN BEYNİDİR (MOTORU). 
+        // ========================================================
+
+        const tuval = document.getElementById("gameCanvas");
+        const cizimAraci = tuval.getContext("2d");
+        const mesajKutusu = document.getElementById("mesaj");
+
+        let asama = 0; 
+        let kose = null;
+        let yon1 = null;
+        let yon2 = null;
+
+        tuval.addEventListener("mousedown", function(olay) {
+            const x = olay.offsetX;
+            const y = olay.offsetY;
+
+            if (asama === 0) {
+                kose = { x: x, y: y }; 
+                asama = 1;
+                mesajKutusu.innerHTML = "2. Adım: 1. Işının gideceği yöne tıkla!";
+                cizimiGuncelle();
+            } 
+            else if (asama === 1) {
+                yon1 = { x: x, y: y }; 
+                asama = 2;
+                mesajKutusu.innerHTML = "3. Adım: Aynı köşeden çıkacak 2. Işının yönüne tıkla!";
+                cizimiGuncelle();
+            }
+            else if (asama === 2) {
+                yon2 = { x: x, y: y }; 
+                asama = 3;
+                mesajKutusu.innerHTML = "Tebrikler! İki ışın arasındaki dönme miktarı bir AÇI oluşturdu!";
+                cizimiGuncelle();
+            }
+        });
+
+        function cizimiGuncelle() {
+            cizimAraci.clearRect(0, 0, tuval.width, tuval.height);
+
+            cizimAraci.lineWidth = cizgiKalinligi;
+
+            // 1. Işını Çiz
+            if (kose !== null && yon1 !== null) {
+                cizimAraci.strokeStyle = isin1Rengi;
+                const aci1 = Math.atan2(yon1.y - kose.y, yon1.x - kose.x);
+                cizimAraci.beginPath();
+                cizimAraci.moveTo(kose.x, kose.y);
+                cizimAraci.lineTo(kose.x + Math.cos(aci1) * 2000, kose.y + Math.sin(aci1) * 2000);
+                cizimAraci.stroke();
+            }
+
+            // 2. Işını Çiz ve Açıyı Göster
+            if (kose !== null && yon2 !== null) {
+                cizimAraci.strokeStyle = isin2Rengi;
+                const aci2 = Math.atan2(yon2.y - kose.y, yon2.x - kose.x);
+                cizimAraci.beginPath();
+                cizimAraci.moveTo(kose.x, kose.y);
+                cizimAraci.lineTo(kose.x + Math.cos(aci2) * 2000, kose.y + Math.sin(aci2) * 2000);
+                cizimAraci.stroke();
+
+                // İki ışın arasındaki "Açı Yayı"
+                const a1 = Math.atan2(yon1.y - kose.y, yon1.x - kose.x);
+                const a2 = Math.atan2(yon2.y - kose.y, yon2.x - kose.x);
+                
+                cizimAraci.beginPath();
+                cizimAraci.moveTo(kose.x, kose.y);
+                cizimAraci.arc(kose.x, kose.y, aciYayiBoyutu, Math.min(a1, a2), Math.max(a1, a2));
+                cizimAraci.fillStyle = "rgba(239, 68, 68, 0.4)"; // Yarı şeffaf kırmızı (Açı içi)
+                cizimAraci.fill();
+                
+                cizimAraci.beginPath();
+                cizimAraci.arc(kose.x, kose.y, aciYayiBoyutu, Math.min(a1, a2), Math.max(a1, a2));
+                cizimAraci.strokeStyle = aciYayiRengi;
+                cizimAraci.stroke();
+            }
+
+            // Köşe noktasını en üste çiz
+            if (kose !== null) { 
+                cizimAraci.beginPath();
+                cizimAraci.arc(kose.x, kose.y, 8, 0, Math.PI * 2);
+                cizimAraci.fillStyle = koseNoktasiRengi;
+                cizimAraci.fill();
+            }
+        }
+    </script>
+</body>
+</html>

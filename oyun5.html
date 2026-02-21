@@ -4,15 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yol Ayrımı - Karar Yapıları</title>
+    <title>Güvenli Rota - Dikme</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Fredoka:wght@400;600&display=swap"
         rel="stylesheet">
     <style>
         :root {
-            --primary: #9b59b6;
-            --dark-bg: #2d3436;
-            --accent: #8e44ad;
-            --text-light: #ecf0f1;
+            --primary: #e94560;
+            --dark-bg: #0f0e17;
+            --accent: #ff6b6b;
+            --text-light: #c8d6e5;
+            --canvas-bg: #16213e;
         }
 
         body {
@@ -22,221 +23,196 @@
             background-color: var(--dark-bg);
             color: var(--text-light);
             height: 100vh;
+            max-height: 780px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            background-image: radial-gradient(circle at 50% 10%, #34495e 0%, #000 100%);
-            transition: background 1s;
         }
 
         .hud {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 30px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            height: 50px;
+            padding: 6px 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(233, 69, 96, 0.2);
+            height: 54px;
+            flex-shrink: 0;
         }
 
         .hud h1 {
             font-family: 'Orbitron';
             margin: 0;
             color: var(--primary);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
         .hud-btn {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 5px 15px;
-            border-radius: 30px;
+            padding: 4px 12px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             font-family: 'Orbitron';
             text-decoration: none;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
+            justify-content: center;
+        }
+
+        .hud-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-code {
+            border-color: #f1c40f;
+            color: #f1c40f;
+        }
+
+        .btn-code:hover {
+            background: #f1c40f;
+            color: #10142b;
+            border-color: #f1c40f;
         }
 
         .stage {
             flex-grow: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
-            width: 100%;
+            align-items: center;
+            padding: 10px;
+            position: relative;
         }
 
-        .path {
+        .info-panel {
+            background: rgba(233, 69, 96, 0.1);
+            border: 1px solid var(--primary);
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+            width: 90%;
+            max-width: 700px;
+            text-align: center;
+        }
+
+        .canvas-container {
+            width: 90%;
+            max-width: 700px;
+            height: 340px;
+            background-color: var(--canvas-bg);
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            position: relative;
+            cursor: crosshair;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .action-row {
             display: flex;
             justify-content: center;
-            gap: 80px;
-            margin-top: 30px;
+            gap: 10px;
+            margin-top: 8px;
         }
 
-        .inv-icon {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
+        .tool-btn {
+            background: #2c3e50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            font-size: 0.9rem;
+            cursor: not-allowed;
+            opacity: 0.3;
+            transition: 0.3s;
+            display: none;
+        }
+
+        .tool-btn.show {
             display: block;
         }
 
-        .inv-text {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .signpost {
-            background: #d35400;
-            padding: 20px;
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-            border: 5px solid #e67e22;
-            max-width: 450px;
-            margin-bottom: 20px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .btn-dir {
-            font-size: 1.2rem;
-            padding: 20px 40px;
-            border: none;
-            border-radius: 50px;
+        .tool-btn.active {
             cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Orbitron';
-            color: white;
-            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
         }
 
-        /* Dynamic Styling Box */
-        .scenario-box {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 20px;
+        /* Keşif Balonu */
+        .discovery-bubble {
+            background: rgba(241, 196, 15, 0.15);
+            border: 1px solid rgba(241, 196, 15, 0.4);
+            border-left: 4px solid #f1c40f;
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: #f1c40f;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 90%;
+            max-width: 700px;
             text-align: center;
-            margin-bottom: 20px;
-            min-width: 300px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            animation: fadeIn 0.5s;
+            margin-top: 6px;
+            opacity: 0;
+            animation: bubbleFadeIn 0.8s ease forwards;
         }
 
-        @keyframes fadeIn {
-            from {
+        @keyframes bubbleFadeIn {
+            0% {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(10px);
             }
 
-            to {
+            100% {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
-        .inv-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .inv-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .signpost {
-            background: #d35400;
-            padding: 30px;
-            border-radius: 10px;
-            color: white;
-            text-align: center;
-            border: 5px solid #e67e22;
-            max-width: 500px;
-            margin-bottom: 30px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Pole for signpost */
-        .signpost::after {
-            content: '';
-            position: absolute;
-            bottom: -500px;
-            left: 50%;
-            width: 20px;
-            height: 500px;
-            background: #7f8c8d;
-            margin-left: -10px;
-            z-index: -1;
-        }
-
-        .rule-text {
-            font-size: 1.2rem;
-            line-height: 1.6;
-        }
-
-        .keyword {
-            color: #f1c40f;
-            font-weight: bold;
-        }
-
-        .btn-dir {
-            font-size: 1.5rem;
-            padding: 25px 45px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Orbitron';
-            color: white;
-            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-dir:active {
-            transform: translateY(5px);
-            box-shadow: none;
-        }
-
-        .btn-left {
-            background: #e74c3c;
-        }
-
-        .btn-left:hover {
-            background: #c0392b;
-        }
-
-        .btn-right {
-            background: #2ecc71;
-        }
-
-        .btn-right:hover {
-            background: #27ae60;
-        }
-
-        /* Progress Dots */
         .progress-dots {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: #2c3e50;
+            transition: 0.3s;
+        }
+
+        .dot.done {
+            background: #2ecc71;
         }
 
         .dot.active {
             background: var(--primary);
-            transform: scale(1.3);
+            box-shadow: 0 0 10px var(--primary);
         }
 
+        /* Modal */
         .modal {
             position: fixed;
             top: 0;
@@ -248,27 +224,68 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(3px);
         }
 
         .modal-box {
-            background: white;
-            color: #2c3e50;
-            padding: 40px;
-            border-radius: 20px;
+            background: var(--dark-bg);
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 20px;
+            border-radius: 15px;
             max-width: 500px;
+            width: 90%;
             text-align: center;
             position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: #95a5a6;
+            color: #8395a7;
+        }
+
+        .secret-letter {
+            font-size: 2rem;
+            color: #f1c40f;
+            font-family: 'Orbitron';
+            background: rgba(241, 196, 15, 0.1);
+            border: 2px dashed #f1c40f;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.8rem;
+        }
+
+        .compare-table th {
+            background: rgba(233, 69, 96, 0.2);
+            color: var(--primary);
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .compare-table td {
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #bdc3c7;
+        }
+
+        .compare-table .winner {
+            background: rgba(46, 204, 113, 0.15);
+            color: #2ecc71;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -276,234 +293,432 @@
 <body>
 
     <div class="hud">
-        <a href="index.html" class="hud-btn">❮ MENÜ</a>
-        <h1>YOL AYRIMI</h1>
-        <div style="display:flex; gap:10px;">
+        <button class="hud-btn" onclick="menuyeDon()">❮ MENÜ</button>
+        <h1>GÜVENLİ ROTA</h1>
+        <div style="display:flex; gap:8px;">
             <button class="hud-btn" onclick="openModal('missionModal')">📜 GÖREV</button>
             <button class="hud-btn btn-code" onclick="openModal('codeModal')">💻 KODLA</button>
         </div>
     </div>
 
     <div class="stage">
-        <div class="progress-dots" id="dots"></div>
-
-        <div class="scenario-box" id="inventory-display">
-            <!-- Dynamic Content -->
+        <div class="info-panel" id="instruction">
+            🚀 <b>1. Adım:</b> Gemi tehlikede! Konumunu belirlemek için <b>üst kısımlara</b> tıkla.
         </div>
 
-        <div class="signpost" id="signpost">
-            <h3 style="margin:0 0 15px 0; border-bottom:2px solid rgba(255,255,255,0.3); padding-bottom:10px;">TABELA
-                KURALI</h3>
-            <div class="rule-text" id="rule-display">
-                <!-- Dynamic Rule -->
-            </div>
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
         </div>
 
-        <div class="path">
-            <button class="btn-dir btn-left" onclick="choose('SOL')">⬅️ SOL</button>
-            <button class="btn-dir btn-right" onclick="choose('SAĞ')">SAĞ ➡️</button>
+        <div id="discoveryArea"></div>
+
+        <div class="action-row">
+            <button class="tool-btn" id="gonyeBtn" onclick="gonyeKullan()">📐 GÖNYE KULLAN (Dikme İndir)</button>
+        </div>
+
+        <div class="progress-dots" id="dots">
+            <div class="dot active" id="dot0"></div>
+            <div class="dot" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
         </div>
     </div>
 
-    <!-- Modals -->
     <div class="modal" id="missionModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('missionModal')">&times;</span>
-            <h2>GÖREV TALİMATI</h2>
-            <p>Karşına çıkan engelleri aşmak için <b>Şart Bloklarını</b> (If/Else) kullan.</p>
-            <p>Envanterindeki eşyalara ve tabeladaki kurala bakarak doğru yolu seç.</p>
+            <h2 style="color:var(--primary); margin-top:0;">GÖREV TALİMATI</h2>
+            <div
+                style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; text-align:left; margin-bottom:15px; border-left:4px solid var(--primary);">
+                <h3 style="color:var(--primary); font-size:0.95rem; margin:0 0 5px 0;">Öğrenme Çıktısı (MAT.5.3.1)</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;"><b>Kazanım:</b> Noktadan doğruya çizilebilecek en
+                    kısa doğru parçasını sorgular. Gönye yardımıyla dikme çizer.</p>
+            </div>
+            <div
+                style="background:rgba(241, 196, 15, 0.1); padding:15px; border-radius:10px; text-align:left; border-left:4px solid #f1c40f;">
+                <h3 style="color:#f1c40f; font-size:0.95rem; margin:0 0 5px 0;">Dikme Nedir?</h3>
+                <p style="font-size:0.85rem; margin:0; color:#bdc3c7;">Bir noktanın bir doğruya olan <b>en kısa
+                        uzaklığıdır</b>. Çizilen bu doğru parçası zeminle tam 90 derecelik bir "Dik Açı" oluşturur. Bunu
+                    çizmek için "Gönye" kullanılır.</p>
+            </div>
         </div>
     </div>
 
     <div class="modal" id="codeModal">
         <div class="modal-box">
             <span class="close-btn" onclick="closeModal('codeModal')">&times;</span>
-            <h2>KOD LABORATUVARI</h2>
-            <p>Bilgisayarlar karar vermek için <b>Karşılaştırma Operatörlerini</b> kullanır.</p>
-            <div
-                style="background:#2d3436; color:#fff; padding:15px; text-align:left; border-radius:5px; font-family:monospace; margin-top:20px;">
-                <span style="color:#e67e22">if</span> (can < 50) {<br>
-                    &nbsp;&nbsp;iksirİç(); <span style="color:#7f8c8d">// Doğru (True)</span><br>
-                    } <span style="color:#e67e22">else</span> {<br>
-                    &nbsp;&nbsp;savas(); <span style="color:#7f8c8d">// Yanlış (False)</span><br>
-                    }
+            <h2 style="color:#f1c40f; margin-top:0;">KOD LABORATUVARI</h2>
+            <p style="font-size:0.85rem;">Editöre gidip geminin ve dikmenin renkleriyle oynayabilirsin!</p>
+            <div style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
+                <button id="copyBtn" class="hud-btn btn-code" onclick="copyStudentCode()"
+                    style="padding:10px 15px; font-size:0.8rem; font-weight:bold;">📄 KODU KOPYALA</button>
+                <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
+                    style="padding:10px 15px; font-size:0.8rem; background:#f1c40f; color:#10142b; font-weight:bold;">💻
+                    EDİTÖRDE DENE</a>
             </div>
-            <a href="https://app.talent14.com/codeEditor" target="_blank" class="hud-btn btn-code"
-                style="display:inline-block; margin-top:20px;">EDİTÖRÜ AÇ</a>
         </div>
     </div>
 
     <div class="modal" id="resultModal">
         <div class="modal-box">
-            <div id="res-icon" style="font-size:4rem; margin-bottom:10px;"></div>
-            <h2 id="res-title"></h2>
-            <p id="res-desc" style="font-size:1.1rem; color:#555;"></p>
-            <button class="hud-btn" id="res-btn" style="display:inline-block; background:#2980b9;">DEVAM ET</button>
+            <div style="font-size:3rem; margin-bottom:5px;">🚀</div>
+            <h2 id="res-title" style="color:var(--primary);">ROTA OLUŞTURULDU!</h2>
+            <p id="res-desc" style="font-size:0.85rem; line-height: 1.5;"></p>
+
+            <div id="compareSection" style="margin:10px 0;"></div>
+
+            <div
+                style="background:rgba(46,204,113,0.1); padding:10px; border-radius:8px; border-left:4px solid #2ecc71; text-align:left; margin:10px 0;">
+                <p style="font-size:0.8rem; margin:0; color:#2ecc71;"><b>📌 Tanım:</b> Bir noktadan bir doğruya
+                    çizilebilecek en kısa doğru parçasına <b>DİKME</b> denir. Doğruyla arasında 90° (dik açı) oluşur.
+                </p>
+            </div>
+
+            <div style="margin-top:10px;">
+                <div style="font-size:0.8rem; color:#8395a7;">GİZLİ ŞİFRE HARFİNİ BULDUN!</div>
+                <div class="secret-letter">E</div>
+            </div>
+
+            <button class="hud-btn" onclick="gorevTamamDon()"
+                style="display:inline-block; margin-top:15px; background:var(--primary); padding:10px 30px;">MENÜYE
+                DÖN</button>
         </div>
     </div>
 
     <script>
-        const scenarios = [
-            {
-                invIcon: "💎",
-                invText: "45 Elmas",
-                bg: "#2c3e50", // Dark Blue
-                signColor: "#d35400", // Orange
-                rule: "EĞER <span class='keyword'>(Elmas > 50)</span> İSE <br>SAĞDAN GİT <br>DEĞİLSE (ELSE) <br>SOLDAN GİT",
-                condition: (val) => val > 50,
-                val: 45,
-                correct: 'SOL',
-                wrongMsg: "Elmas sayın 50'den büyük değil (45 < 50)."
-            },
-            {
-                invIcon: "🍎",
-                invText: "Enerji: %80",
-                bg: "#27ae60", // Greenish
-                signColor: "#c0392b", // Red
-                rule: "EĞER <span class='keyword'>(Enerji < %30)</span> İSE <br>SOLA (Dinlen) <br>DEĞİLSE <br>SAĞA (Koş)",
-                condition: (val) => val < 30,
-                val: 80,
-                correct: 'SAĞ',
-                wrongMsg: "Enerjin %30'dan küçük değil (%80). O yüzden koşmalısın!"
-            },
-            {
-                invIcon: "🔑",
-                invText: "Altın Anahtar",
-                bg: "#8e44ad", // Purple
-                signColor: "#f39c12", // Yellow
-                rule: "EĞER <span class='keyword'>(Anahtar == 'Altın')</span> İSE <br>SAĞDAN GİT (Hazine) <br>DEĞİLSE <br>SOLDAN GİT (Zindan)",
-                condition: (val) => val === 'Altın',
-                val: 'Altın',
-                correct: 'SAĞ',
-                wrongMsg: "Altın anahtarın var, hazineye gitmeliydin!"
-            },
-            {
-                invIcon: "🌧️",
-                invText: "Hava Durumu: Yağmurlu",
-                bg: "#34495e", // Dark Grey
-                signColor: "#2980b9", // Blue
-                rule: "EĞER <span class='keyword'>(Hava != 'Güneşli')</span> İSE <br>SOLA (Şemsiye Al) <br>DEĞİLSE <br>SAĞA (Gözlük Tak)",
-                condition: (val) => val !== 'Güneşli',
-                val: 'Yağmurlu',
-                correct: 'SOL',
-                wrongMsg: "Hava güneşli olmadığı için şemsiyeni almalıydın."
-            },
-            // New Scenarios
-            {
-                invIcon: "🚗",
-                invText: "Hız: 80 km/s",
-                bg: "#c0392b", // Red
-                signColor: "#ecf0f1", // White
-                rule: "EĞER <span class='keyword'>(Hız > 50)</span> İSE <br>SAĞA (Yavaşla) <br>DEĞİLSE <br>SOLA (Devam Et)",
-                condition: (val) => val > 50,
-                val: 80,
-                correct: 'SAĞ',
-                wrongMsg: "Hızın 80, yani 50'den büyük. Yavaşlaman (Sağ) gerekirdi."
-            },
-            {
-                invIcon: "🔋",
-                invText: "Pil: %15",
-                bg: "#f39c12", // Orange
-                signColor: "#2c3e50", // Dark
-                rule: "EĞER <span class='keyword'>(Pil <= %20)</span> İSE <br>SOLA (Şarj Et) <br>DEĞİLSE <br>SAĞA (Kullan)",
-                condition: (val) => val <= 20,
-                val: 15,
-                correct: 'SOL',
-                wrongMsg: "Pilin %20'den az (%15). Şarj etmen gerekirdi."
-            }
-        ];
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const instText = document.getElementById('instruction');
+        const gonyeBtn = document.getElementById('gonyeBtn');
+        const discoveryArea = document.getElementById('discoveryArea');
 
-        let currentIdx = 0;
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            drawCanvas();
+        }
+        window.addEventListener('resize', resizeCanvas);
 
-        function initGame() {
-            // Render Dots
-            const dotCont = document.getElementById('dots');
-            dotCont.innerHTML = "";
-            for (let i = 0; i < scenarios.length; i++) {
-                let dot = document.createElement('div');
-                dot.className = 'dot' + (i === 0 ? ' active' : '');
-                dot.id = 'dot-' + i;
-                dotCont.appendChild(dot);
-            }
-            loadScenario();
+        let state = 0; // 0=gemi bekle, 1=keşif (deneme), 2=gönye hazır, 3=dikme animasyonu, 4=bitti
+        let gemi = null;
+        let dogruY = 0; // Resized sonra hesaplanacak
+        let denemeler = []; // {x, y, uzunluk} - öğrencinin denediği yollar
+        let dikmeAnimY = null;
+        let maxDeneme = 3;
+
+        function calcDogruY() {
+            dogruY = canvas.height * 0.75;
         }
 
-        function loadScenario() {
-            if (currentIdx >= scenarios.length) {
-                // Finish
-                showResult(true, "BİTTİ", "Tüm kararları doğru verdin!", true);
-                return;
+        canvas.addEventListener('mousedown', function (e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            if (state === 0) {
+                calcDogruY();
+                if (y > dogruY - 50) {
+                    instText.innerHTML = "⚠️ Zemine çok yakınsın! Yukarıda bir yer seç.";
+                    return;
+                }
+                gemi = { x, y };
+                state = 1;
+                setDot(0, 'done'); setDot(1, 'active');
+                instText.innerHTML = "🔍 <b>2. Adım (KEŞİF):</b> Gemiden zemine farklı yollar dene! <b>Doğrunun üstüne tıkla</b> ve uzunlukları karşılaştır.";
+                showDiscovery("💡 Gemi tehlikede! Zemine (doğruya) inen en kısa yolu bul. Farklı noktaları dene!");
+                drawCanvas();
             }
+            else if (state === 1) {
+                // Keşif: Öğrenci doğru üzerinde farklı noktalara tıklar
+                if (y < dogruY - 30 || y > dogruY + 30) {
+                    instText.innerHTML = "⚠️ <b>Yeşil doğrunun üstüne</b> tıkla! Yolun nereye ulaşacağını seç.";
+                    return;
+                }
+                const hedefX = x;
+                const hedefY = dogruY;
+                const uzunluk = Math.round(Math.hypot(hedefX - gemi.x, hedefY - gemi.y));
 
-            const s = scenarios[currentIdx];
+                denemeler.push({ x: hedefX, y: hedefY, uzunluk: uzunluk });
+                drawCanvas();
 
-            // Apply Styles
-            document.body.style.backgroundImage = `radial-gradient(circle at 50% 10%, ${s.bg} 0%, #000 100%)`;
-            document.getElementById('signpost').style.backgroundColor = s.signColor;
-            document.getElementById('signpost').style.borderColor = adjustColor(s.signColor, -20);
+                // Animasyonlu çizgi çekme
+                animateLine(gemi.x, gemi.y, hedefX, hedefY, denemeler.length - 1, () => {
+                    const kalan = maxDeneme - denemeler.length;
 
-            // Set Text
-            const inv = document.getElementById('inventory-display');
-            inv.style.color = s.keywordColor || '#fff';
-            inv.innerHTML = `<span class="inv-icon">${s.invIcon}</span><div class="inv-text">${s.invText}</div>`;
+                    if (denemeler.length === 1) {
+                        showDiscovery(`💡 Bu yol ${uzunluk} birim. Daha kısa bir yol bulabilir misin? (${kalan} deneme kaldı)`);
+                        instText.innerHTML = `📏 Yol 1: <b>${uzunluk} birim</b>. Daha kısa yol var mı? Başka bir noktaya tıkla!`;
+                    } else if (denemeler.length === 2) {
+                        const en_kisa = Math.min(...denemeler.map(d => d.uzunluk));
+                        showDiscovery(`💡 Yol 2: ${uzunluk} birim. En kısası şu ana kadar ${en_kisa} birim. Son 1 deneme!`);
+                        instText.innerHTML = `📏 Yol 2: <b>${uzunluk} birim</b>. Son bir deneme hakkın kaldı!`;
+                    } else {
+                        // 3 deneme bitti
+                        const en_kisa = Math.min(...denemeler.map(d => d.uzunluk));
+                        showDiscovery(`🤔 3 yol denedin. En kısası ${en_kisa} birim. Peki gerçekten EN KISA yol bu mu? Gönye ile kontrol edelim!`);
+                        instText.innerHTML = "📐 <b>3. Adım:</b> Şimdi <b>GÖNYE KULLAN</b> butonuna tıkla ve gerçek en kısa yolu gör!";
+                        state = 2;
+                        setDot(1, 'done'); setDot(2, 'active');
+                        gonyeBtn.classList.add('show', 'active');
+                    }
+                });
+            }
+        });
 
-            document.getElementById('rule-display').innerHTML = s.rule;
+        function animateLine(x1, y1, x2, y2, index, callback) {
+            let progress = 0;
+            const colors = ['#e67e22', '#3498db', '#9b59b6'];
+            const color = colors[index % colors.length];
 
-            // Dot Update
-            document.querySelectorAll('.dot').forEach((d, i) => {
-                d.classList.toggle('active', i === currentIdx);
+            function step() {
+                progress += 0.04;
+                if (progress > 1) progress = 1;
+
+                drawCanvas();
+                // Önceki tüm denemeleri çiz
+                drawAllTrials();
+
+                // Aktif çizgi animasyonu
+                const cx = x1 + (x2 - x1) * progress;
+                const cy = y1 + (y2 - y1) * progress;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(cx, cy);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Uç noktada parıltı
+                if (progress < 1) {
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    drawCanvas();
+                    drawAllTrials();
+                    callback();
+                }
+            }
+            step();
+        }
+
+        function drawAllTrials() {
+            const colors = ['#e67e22', '#3498db', '#9b59b6'];
+            denemeler.forEach((d, i) => {
+                ctx.beginPath();
+                ctx.moveTo(gemi.x, gemi.y);
+                ctx.lineTo(d.x, d.y);
+                ctx.strokeStyle = colors[i % colors.length];
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Uzunluk etiketi
+                const midX = (gemi.x + d.x) / 2;
+                const midY = (gemi.y + d.y) / 2;
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.font = "bold 12px Orbitron";
+                const offset = i * 15 - 10;
+                ctx.fillText(`${d.uzunluk} br`, midX + offset, midY - 8);
+
+                // Hedef noktasında daire
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.fill();
             });
         }
 
-        function choose(choice) {
-            const s = scenarios[currentIdx];
-            if (choice === s.correct) {
-                showResult(true, "DOĞRU KARAR! ✅", "Mantık doğru kuruldu.");
-            } else {
-                showResult(false, "YANLIŞ YOL! ⛔", s.wrongMsg);
+        function gonyeKullan() {
+            if (state !== 2) return;
+            gonyeBtn.classList.remove('show', 'active');
+            state = 3;
+            setDot(2, 'done'); setDot(3, 'active');
+            instText.innerHTML = "📐 Gönye yerleşiyor... Doğruya 90° DİKME indiriliyor...";
+            showDiscovery("⏳ Dikkat et: Gönye ile çizilen çizgi doğruya tam DİK (90°) iniyor!");
+
+            let inenY = gemi.y;
+            const animasyon = setInterval(() => {
+                inenY += 2; // Yavaşlatılmış (6→2)
+                if (inenY >= dogruY) {
+                    inenY = dogruY;
+                    clearInterval(animasyon);
+
+                    dikmeAnimY = dogruY;
+                    const dikmeUzunluk = Math.round(dogruY - gemi.y);
+
+                    // Dik açı sembolünü çiz
+                    drawCanvas(dogruY);
+                    drawAllTrials();
+                    drawDikme(dogruY);
+
+                    setTimeout(() => {
+                        const en_kisa_deneme = Math.min(...denemeler.map(d => d.uzunluk));
+                        showDiscovery(`🎯 DİKME: ${dikmeUzunluk} birim! ${dikmeUzunluk < en_kisa_deneme ? 'Tüm denemelerinden daha KISA!' : 'İşte en kısa yol!'}`);
+                        instText.innerHTML = `✅ Dikme: <b>${dikmeUzunluk} birim</b> — En kısa yol her zaman DİK olandır!`;
+
+                        // Karşılaştırma tablosu oluştur
+                        buildCompareTable(dikmeUzunluk);
+
+                        setTimeout(() => {
+                            setDot(3, 'done');
+                            openModal('resultModal');
+                        }, 2000);
+                    }, 1000);
+                }
+                drawCanvas(inenY);
+                drawAllTrials();
+                drawDikme(inenY);
+            }, 20);
+        }
+
+        function drawDikme(currentY) {
+            // Dikme çizgisi (kalın kırmızı)
+            ctx.beginPath();
+            ctx.moveTo(gemi.x, gemi.y);
+            ctx.lineTo(gemi.x, currentY);
+            ctx.strokeStyle = "#e94560";
+            ctx.lineWidth = 4;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = "#e94560";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Dik açı sembolü
+            if (currentY >= dogruY) {
+                const size = 18;
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(gemi.x, dogruY - size, size, size);
+                ctx.fillStyle = "#fff";
+                ctx.beginPath();
+                ctx.arc(gemi.x + size / 2, dogruY - size / 2, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 90° yazısı
+                ctx.fillStyle = "#f1c40f";
+                ctx.font = "bold 14px Orbitron";
+                ctx.fillText("90°", gemi.x + size + 5, dogruY - size / 2 + 5);
+
+                // Dikme uzunluk etiketi
+                const dikmeUzunluk = Math.round(dogruY - gemi.y);
+                ctx.fillStyle = "#e94560";
+                ctx.font = "bold 13px Orbitron";
+                ctx.fillText(`${dikmeUzunluk} br ✓`, gemi.x + 12, (gemi.y + dogruY) / 2);
             }
         }
 
-        function showResult(success, title, desc, isFinal = false) {
-            const mBox = document.querySelector('#resultModal .modal-box');
-            mBox.style.borderTop = success ? "5px solid #2ecc71" : "5px solid #e74c3c";
+        function drawCanvas(anlikY = null) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            calcDogruY();
 
-            document.getElementById('res-icon').innerText = success ? "🎉" : "🤔";
-            document.getElementById('res-title').innerText = title;
-            document.getElementById('res-title').style.color = success ? "#2ecc71" : "#e74c3c";
-            document.getElementById('res-desc').innerText = desc;
-
-            const btn = document.getElementById('res-btn');
-
-            if (isFinal) {
-                btn.innerText = "ANA MENÜYE DÖN";
-                btn.onclick = () => location.href = 'index.html';
-                btn.style.background = "#2ecc71";
-            } else if (success) {
-                btn.innerText = "SONRAKİ SEVİYE";
-                btn.onclick = () => {
-                    closeModal('resultModal');
-                    currentIdx++;
-                    loadScenario();
-                };
-                btn.style.background = "#3498db";
-            } else {
-                btn.innerText = "TEKRAR DENE";
-                btn.onclick = () => closeModal('resultModal');
-                btn.style.background = "#e74c3c";
+            // Yıldızlı arkaplan
+            ctx.fillStyle = "rgba(255,255,255,0.15)";
+            for (let i = 0; i < 25; i++) {
+                ctx.beginPath();
+                ctx.arc((i * 137.5) % canvas.width, (i * 97.3) % canvas.height, 1, 0, Math.PI * 2);
+                ctx.fill();
             }
 
-            openModal('resultModal');
+            // Güvenli Bölge (Zemin Doğrusu)
+            ctx.beginPath();
+            ctx.moveTo(0, dogruY);
+            ctx.lineTo(canvas.width, dogruY);
+            ctx.strokeStyle = "#2ecc71";
+            ctx.lineWidth = 6;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#2ecc71";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = "#2ecc71";
+            ctx.font = "bold 13px Orbitron";
+            ctx.fillText("GÜVENLİ BÖLGE (Doğru)", 15, dogruY + 22);
+
+            // Gemi
+            if (gemi) {
+                // Gemi glow
+                ctx.beginPath();
+                ctx.arc(gemi.x, gemi.y, 14, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(241, 196, 15, 0.2)";
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(gemi.x, gemi.y, 8, 0, Math.PI * 2);
+                ctx.fillStyle = "#f1c40f";
+                ctx.fill();
+
+                ctx.fillStyle = "white";
+                ctx.font = "bold 12px Orbitron";
+                ctx.fillText("🚀 Gemi", gemi.x + 18, gemi.y + 5);
+            }
+
+            // Dikme animasyonu (state 3+)
+            if (state >= 3 && anlikY !== null) {
+                drawDikme(anlikY);
+            }
         }
 
-        function adjustColor(color, amount) {
-            return color; // Simplification, ideally hex darken algo
+        function showDiscovery(text) {
+            discoveryArea.innerHTML = `<div class="discovery-bubble">${text}</div>`;
+        }
+
+        function buildCompareTable(dikmeUzunluk) {
+            const colors = ['#e67e22', '#3498db', '#9b59b6'];
+            let rows = '';
+            denemeler.forEach((d, i) => {
+                rows += `<tr><td style="color:${colors[i]}">Deneme ${i + 1}</td><td>${d.uzunluk} birim</td><td>${d.uzunluk <= dikmeUzunluk ? '≈ Yakın' : 'Uzun ✗'}</td></tr>`;
+            });
+            rows += `<tr class="winner"><td style="color:#e94560">📐 Dikme</td><td>${dikmeUzunluk} birim</td><td>EN KISA ✓</td></tr>`;
+
+            document.getElementById('compareSection').innerHTML = `
+                <table class="compare-table">
+                    <tr><th>Yol</th><th>Uzunluk</th><th>Sonuç</th></tr>
+                    ${rows}
+                </table>
+            `;
+            document.getElementById('res-desc').innerHTML = `Denediğin ${denemeler.length} yolun hepsinden <b>DİKME</b> daha kısa çıktı! Çünkü bir noktadan doğruya inen en kısa yol her zaman <b>90° dik açı</b> ile iner.`;
+        }
+
+        function setDot(index, state) {
+            const dot = document.getElementById('dot' + index);
+            dot.className = 'dot';
+            if (state) dot.classList.add(state);
         }
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function menuyeDon() { window.parent.postMessage({ tip: 'MENUYE_DON' }, '*'); }
+        function gorevTamamDon() {
+            window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 5, harf: 'E' }, '*');
+            setTimeout(() => menuyeDon(), 300);
+        }
 
-        window.onload = initGame;
+        function copyStudentCode() {
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = "⌛ BEKLEYİN...";
+            fetch('ogrenci_kodu5.txt')
+                .then(response => { if (!response.ok) throw new Error("Dosya bulunamadı!"); return response.text(); })
+                .then(kodMetni => navigator.clipboard.writeText(kodMetni))
+                .then(() => {
+                    btn.innerHTML = "✓ KOPYALANDI"; btn.style.background = "#f1c40f"; btn.style.color = "#10142b";
+                    setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; btn.style.background = "transparent"; btn.style.color = "#f1c40f"; }, 2000);
+                })
+                .catch(err => {
+                    alert("Kod alınamadı! ogrenci_kodu5.txt dosyasını kontrol edin.");
+                    btn.innerHTML = "📄 KODU KOPYALA";
+                });
+        }
+
+        resizeCanvas();
     </script>
 </body>
 
