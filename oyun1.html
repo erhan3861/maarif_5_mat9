@@ -614,7 +614,7 @@
         }
 
         function showDiscovery(text) {
-            discoveryArea.innerHTML = `<div KÖPRÜ AKTİF!class="discovery-bubble">${text}</div>`;
+            discoveryArea.innerHTML = `<div class="discovery-bubble">${text}</div>`;
         }
 
         function setDot(index, dotState) {
@@ -625,10 +625,20 @@
 
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function menuyeDon() { window.parent.postMessage({ tip: 'MENUYE_DON' }, '*'); }
+        function menuyeDon() {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ tip: 'MENUYE_DON' }, '*');
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
         function gorevTamamDon() {
-            window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 1, harf: 'P' }, '*');
-            setTimeout(() => menuyeDon(), 300);
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 1, harf: 'P' }, '*');
+                setTimeout(() => menuyeDon(), 300);
+            } else {
+                window.location.href = 'index.html';
+            }
         }
 
         function copyStudentCode() {

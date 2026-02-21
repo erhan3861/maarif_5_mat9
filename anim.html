@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI ile Eğitim Videosu Oluşturucu</title>
+    <style>
+        body {
+            background-color: #222;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+        }
+
+        /* Siyah arkaplanlı canvas alanımız */
+        canvas {
+            background-color: #000;
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #555;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #btnBasla {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        #btnDurdur {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+
+        button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Öğrenim Çıktısı: Dik Üçgenin Oluşumu</h2>
+    <canvas id="animasyonCanvas" width="640" height="360"></canvas>
+
+    <button id="btnBasla">Animasyonu Başlat ve Kaydet</button>
+    <button id="btnDurdur" disabled>Durdur ve Videoyu İndir</button>
+
+    <script>
+        const canvas = document.getElementById('animasyonCanvas');
+        const ctx = canvas.getContext('2d');
+        let frame = 0;
+        let animasyonId;
+
+        // MediaRecorder (Video Kaydedici) değişkenleri
+        let mediaRecorder;
+        let kaydedilenVeriler = [];
+
+        // --- 1. BÖLÜM: YAPAY ZEKANIN ÜRETECEĞİ ANİMASYON KODU ---
+        function cizimYap() {
+            // Her karede siyah arkaplanı yenile
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Şekil ayarları (Beyaz renk, kalın çizgi)
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            ctx.beginPath();
+
+            // Adım 1: Dikey Çizgi (Aşağı doğru iniyor)
+            if (frame > 10) {
+                ctx.moveTo(200, 100);
+                let y1 = Math.min(100 + (frame - 10) * 2, 250);
+                ctx.lineTo(200, y1);
+            }
+
+            // Adım 2: Yatay Çizgi (Sağa doğru gidiyor)
+            if (frame > 85) {
+                ctx.moveTo(200, 250);
+                let x2 = Math.min(200 + (frame - 85) * 2, 400);
+                ctx.lineTo(x2, 250);
+            }
+
+            // Adım 3: Hipotenüs (Çapraz birleşerek üçgeni tamamlıyor)
+            if (frame > 185) {
+                ctx.moveTo(400, 250);
+                let hX = Math.max(400 - (frame - 185) * 2, 200);
+                let hY = Math.max(250 - (frame - 185) * 1.5, 100);
+                ctx.lineTo(hX, hY);
+            }
+
+            ctx.stroke();
+
+            frame++;
+            animasyonId = requestAnimationFrame(cizimYap);
+        }
+
+        // Başlangıçta ekranı siyah yap
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // --- 2. BÖLÜM: VİDEO KAYIT SİSTEMİ (Sabit Kalacak Kısım) ---
+        document.getElementById('btnBasla').addEventListener('click', () => {
+            frame = 0;
+            kaydedilenVeriler = [];
+
+            // Canvas'tan saniyede 30 kare (30fps) akış al
+            const stream = canvas.captureStream(30);
+            // WebM formatında video kaydını başlat
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+            mediaRecorder.ondataavailable = function (event) {
+                if (event.data && event.data.size > 0) {
+                    kaydedilenVeriler.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = function () {
+                // Kaydedilen verileri tek bir video dosyasında birleştir
+                const blob = new Blob(kaydedilenVeriler, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+
+                // İndirme linki oluştur ve otomatik indir
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'ogrenim-ciktisi.webm';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+
+            mediaRecorder.start();
+            cizimYap(); // Animasyonu başlat
+
+            document.getElementById('btnBasla').disabled = true;
+            document.getElementById('btnDurdur').disabled = false;
+        });
+
+        document.getElementById('btnDurdur').addEventListener('click', () => {
+            mediaRecorder.stop();
+            cancelAnimationFrame(animasyonId); // Animasyonu durdur
+
+            document.getElementById('btnBasla').disabled = false;
+            document.getElementById('btnDurdur').disabled = true;
+        });
+    </script>
+</body>
+
+</html>

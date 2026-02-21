@@ -622,11 +622,12 @@
                 document.getElementById('secret-area').style.display = "block";
                 btn.innerText = "ANA MENÜYE DÖN";
                 btn.onclick = () => {
-                    // Önce şifre harfini gönder, sonra menüye dön
-                    window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 6, harf: 'L' }, '*');
-                    setTimeout(() => {
-                        window.parent.postMessage({ tip: 'MENUYE_DON' }, '*');
-                    }, 300);
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ tip: 'GOREV_TAMAM', id: 6, harf: 'L' }, '*');
+                        setTimeout(() => menuyeDon(), 300);
+                    } else {
+                        window.location.href = 'index.html';
+                    }
                 };
                 btn.style.background = "var(--primary)";
             } else if (isSuccess) {
@@ -653,7 +654,11 @@
 
         function menuyeDon() {
             if (isAnimating) return;
-            window.parent.postMessage({ tip: 'MENUYE_DON' }, '*');
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ tip: 'MENUYE_DON' }, '*');
+            } else {
+                window.location.href = 'index.html';
+            }
         }
 
         function copyStudentCode() {
