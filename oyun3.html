@@ -664,7 +664,20 @@
             btn.innerHTML = "⌛ BEKLEYİN...";
             fetch('ogrenci_kodu3.txt')
                 .then(response => { if (!response.ok) throw new Error("Dosya bulunamadı!"); return response.text(); })
-                .then(kodMetni => navigator.clipboard.writeText(kodMetni))
+                .then(kodMetni => {
+                    if (navigator.clipboard && window.isSecureContext && window.parent === window) {
+                        return navigator.clipboard.writeText(kodMetni);
+                    } else {
+                        const ta = document.createElement('textarea');
+                        ta.value = kodMetni;
+                        ta.style.position = 'fixed';
+                        ta.style.left = '-9999px';
+                        document.body.appendChild(ta);
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                    }
+                })
                 .then(() => {
                     btn.innerHTML = "✓ KOPYALANDI"; btn.style.background = "#2ecc71"; btn.style.color = "#10142b";
                     setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; btn.style.background = "transparent"; btn.style.color = "var(--accent)"; }, 2000);

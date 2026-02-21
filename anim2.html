@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Akıcı Animasyon Motoru</title>
+    <style>
+        body {
+            background-color: #111;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        canvas {
+            background-color: #000;
+            border: 1px solid #333;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #7b2cbf;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="egitimEkrani" width="800" height="450"></canvas>
+    <button id="baslatBtn">Eğitimi Oynat</button>
+
+    <script>
+        const canvas = document.getElementById('egitimEkrani');
+        const ctx = canvas.getContext('2d');
+        let baslangicZamani = null;
+        let animasyonCalisiyor = false;
+
+        // ==========================================
+        // YAPAY ZEKANIN ÜRETECEĞİ KISIM (BAŞLANGIÇ)
+        // AI konuyu, metinleri ve geçişleri burada kendisi hesaplar.
+        // ==========================================
+        function animasyonKaresi(ctx, zamanMs, canvas) {
+            // Siyah arka planı her karede temizle
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            // MATEMATİKSEL İNTERPOLASYON VE GÜVENLİK YARDIMCILARI
+            function ilerlemeHesapla(zaman, baslangic, sure) {
+                return Math.max(0, Math.min((zaman - baslangic) / sure, 1));
+            }
+            function opaklikHesapla(zaman, gBas, gSur, cBas, cSur) {
+                return Math.max(0, ilerlemeHesapla(zaman, gBas, gSur) - ilerlemeHesapla(zaman, cBas, cSur));
+            }
+
+            // -------------------------------------------------------------
+            // SAHNE 1 (0 - 4 Saniye): BÜTÜNÜN BELİRMESİ
+            // -------------------------------------------------------------
+            let sahne1Opaklik = opaklikHesapla(zamanMs, 500, 1000, 3500, 500);
+
+            if (zamanMs < 4500) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${sahne1Opaklik})`;
+                ctx.font = "24px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("Elimizde tam bir BÜTÜN var.", cx, cy - 140);
+
+                // HATA ÖNLEYİCİ: Yarıçap hesaplamasında Math.max(0, ...) kullanıldı
+                let genisleme = ilerlemeHesapla(zamanMs, 1000, 1500) * 100;
+                let guvenliYaricap = Math.max(0, genisleme);
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, guvenliYaricap, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 255, 255, ${sahne1Opaklik})`; // Turkuaz
+                ctx.lineWidth = 4;
+                ctx.stroke();
+                ctx.fillStyle = `rgba(0, 255, 255, ${sahne1Opaklik * 0.2})`;
+                ctx.fill();
+            }
+
+            // -------------------------------------------------------------
+            // SAHNE 2 (4 - 9 Saniye): EŞ PARÇALARA BÖLÜNME
+            // -------------------------------------------------------------
+            let sahne2Opaklik = opaklikHesapla(zamanMs, 4000, 1000, 8500, 500);
+
+            if (zamanMs >= 4000 && zamanMs < 9500) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${sahne2Opaklik})`;
+                ctx.fillText("Şimdi bu bütünü 4 EŞ PARÇAYA bölelim.", cx, cy - 140);
+
+                // Ana çember sabit
+                ctx.beginPath();
+                ctx.arc(cx, cy, 100, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 255, 255, ${sahne2Opaklik})`;
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Çizgilerin merkezden dışa doğru uzayarak çemberi kesmesi
+                let cizgiUza = ilerlemeHesapla(zamanMs, 5000, 1500) * 100;
+                let guvenliCizgi = Math.max(0, cizgiUza);
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - guvenliCizgi); ctx.lineTo(cx, cy + guvenliCizgi); // Dikey kesim
+                ctx.moveTo(cx - guvenliCizgi, cy); ctx.lineTo(cx + guvenliCizgi, cy); // Yatay kesim
+                ctx.stroke();
+            }
+
+            // -------------------------------------------------------------
+            // SAHNE 3 (9 Saniye ve Sonrası): BİRİM KESİRİN AYRILMASI VE VURGUSU
+            // -------------------------------------------------------------
+            let sahne3Opaklik = opaklikHesapla(zamanMs, 9000, 1000, 999999, 0); // Sona kadar kalır
+
+            if (zamanMs >= 9000) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${sahne3Opaklik})`;
+                ctx.fillText("Bu eş parçalardan sadece BİR TANESİNE...", cx, cy - 140);
+
+                let metinGecikme = ilerlemeHesapla(zamanMs, 12000, 1000);
+                ctx.fillStyle = `rgba(255, 215, 0, ${metinGecikme})`; // Sarı neon metin
+                ctx.font = "bold 28px sans-serif";
+                ctx.fillText("BİRİM KESİR (1/4) denir.", cx, cy + 150);
+
+                // 3 parça arka planda soluk olarak kalır
+                ctx.beginPath();
+                ctx.arc(cx, cy, 100, Math.PI * 1.5, Math.PI * 1.5 + Math.PI * 1.5); // Sağ üst hariç diğerleri
+                ctx.lineTo(cx, cy);
+                ctx.closePath();
+                ctx.strokeStyle = `rgba(0, 255, 255, ${sahne3Opaklik * 0.3})`;
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Ayrılan 1 parça (Sağ üst çeyrek) animasyonu
+                let ayrilmaMiktari = ilerlemeHesapla(zamanMs, 10500, 2000) * 30; // Çeyrek dilim 30px dışarı kayar
+                let dilimX = cx + ayrilmaMiktari;
+                let dilimY = cy - ayrilmaMiktari;
+
+                // HATA ÖNLEYİCİ: Kalp atışı (pulse) efektinde yarıçapın eksiye düşmemesi güvenceye alındı
+                let pulse = Math.sin(zamanMs / 200) * 3;
+                let pulseAktif = ilerlemeHesapla(zamanMs, 13000, 1000); // Pulse efekti 13. saniyede başlar
+                let dilimYaricap = Math.max(0, 100 + (pulse * pulseAktif));
+
+                ctx.beginPath();
+                ctx.moveTo(dilimX, dilimY);
+                ctx.arc(dilimX, dilimY, dilimYaricap, -Math.PI / 2, 0); // 90 derecelik dilim
+                ctx.lineTo(dilimX, dilimY);
+
+                ctx.strokeStyle = `rgba(255, 215, 0, ${sahne3Opaklik})`; // Sarı parlak kenar
+                ctx.lineWidth = 5;
+                ctx.stroke();
+                ctx.fillStyle = `rgba(255, 215, 0, ${sahne3Opaklik * 0.6})`;
+                ctx.fill();
+            }
+        }
+        // ==========================================
+        // YAPAY ZEKANIN ÜRETECEĞİ KISIM (BİTİŞ)
+        // ==========================================
+
+        function motoruCalistir(timestamp) {
+            if (!baslangicZamani) baslangicZamani = timestamp;
+            const gecenZaman = timestamp - baslangicZamani;
+
+            animasyonKaresi(ctx, gecenZaman, canvas);
+
+            if (animasyonCalisiyor) {
+                requestAnimationFrame(motoruCalistir);
+            }
+        }
+
+        document.getElementById('baslatBtn').addEventListener('click', () => {
+            baslangicZamani = null; // Zamanı sıfırla
+            animasyonCalisiyor = true;
+            requestAnimationFrame(motoruCalistir);
+        });
+
+    </script>
+</body>
+
+</html>

@@ -795,7 +795,18 @@
             const btn = document.getElementById('copyBtn');
             btn.innerHTML = "⌛...";
             fetch('ogrenci_kodu2.txt').then(r => r.text()).then(kod => {
-                navigator.clipboard.writeText(kod);
+                if (navigator.clipboard && window.isSecureContext && window.parent === window) {
+                    navigator.clipboard.writeText(kod);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = kod;
+                    ta.style.position = 'fixed';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                }
                 btn.innerHTML = "✓ KOPYALANDI"; btn.style.background = "#2ecc71";
                 setTimeout(() => { btn.innerHTML = "📄 KODU KOPYALA"; btn.style.background = "transparent"; }, 2000);
             }).catch(() => alert("Dosya bulunamadı!"));
